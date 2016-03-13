@@ -27,7 +27,8 @@ public class GaEngine {
 //        计算一条路径的适应度  fit=1/totalLength+N N 表示经过的中间点个数
         double fit=0;
         double totalLength=0;//路径长度
-        for(int i=0;i<route.size();i++){
+        for(int i=0;i<route.size()-1;i++){
+            //totalLength+=graph[route.get(i)][][]
 
         }
         return fit;
