@@ -129,12 +129,11 @@ public class GaEngine {
                 subFather1.addAll(subMather2);
                 subMather1.addAll(subFather2);
                 //拼接
+                father=this.removeLoop((ArrayList<Integer>) subFather1);
+                mather=this.removeLoop((ArrayList<Integer>) subMather1);
 
 //                subFather1.addAll()
-
             }
-
-
         }
         ArrayList[] parentsRoute = new ArrayList[2];
         parentsRoute[0] = father;
@@ -145,7 +144,17 @@ public class GaEngine {
 
     private ArrayList<Integer> removeLoop(ArrayList<Integer>route){
 //        去除路径中的环
-        
+        for(int i=0;i<route.size()-1;i++){
+            for(int j=route.size()-1;j>i;j--){
+                if(route.get(i).equals(route.get(j))){
+                    ArrayList<Integer>list1=(ArrayList<Integer>) route.subList(0,i);
+                    ArrayList<Integer>list2=(ArrayList<Integer>) route.subList(j+1,route.size());
+                    list1.addAll(list2);
+                    route=list1;
+                    break;
+                }
+            }
+        }
         return route;
     }
 
@@ -164,13 +173,24 @@ public class GaEngine {
                 fit[pointList.size() - 1] = this.CalculFit(this.population[point]);
             }
         }
+
+        for(int i=0;i<2;i++){
+            //选择排序，选择出前两个适应度最高的
+            for(int j=2;j<fit.length;j++){
+                if(fit[j]>fit[i]){
+                    double tempFit=fit[i];
+                    fit[i]=fit[j];
+                    fit[j]=tempFit;
+
+                    Integer tempPoint=pointList.get(i);
+                    pointList.set(i,pointList.get(j));
+                    pointList.set(j,tempPoint);
+
+                }
+            }
+        }
         parents[0]=pointList.get(0);
         parents[1]=pointList.get(1);
-        for(int i=2;i<fit.length;i++){
-            Arrays.sort(parents);
-            if(fit[i]>fit[0]||fit[i]>fit[1]);
-
-        }
         return parents;
 
 
