@@ -19,9 +19,10 @@ public class GaEngine {
     private int graph[][][];
     //用来存储图，每一行表示一个点可以到达的点和权值，里面存储的是二维数组 [x][0]表示点，[x][1]表示权值.
     ArrayList population[];//种群
-    public GaEngine(int [][][] graph){
+    public GaEngine(int [][][] graph,int[] demand){
 //        构造函数传入graph
         this.graph=graph.clone();
+        this.demand=demand;
         for(int i=1;i<this.demand.length-1;i++){
             demandSet.add(this.demand[i]);
         }
@@ -80,8 +81,7 @@ public class GaEngine {
         return route;
     }
 
-
-    public ArrayList[] Crossover(int []parents) {
+    private ArrayList[] Crossover(int []parents) {
 //      交叉函数
         ArrayList<Integer> father = new ArrayList<Integer>();
         ArrayList<Integer> mather = new ArrayList<Integer>();
@@ -141,6 +141,32 @@ public class GaEngine {
         return parentsRoute;
     }
 
+    public void Breed(){
+//        繁殖函数包括整个选择和交叉过程
+        ArrayList []nextPopulation=new ArrayList[this.Popsize];
+        for(int i=0;i<this.Popsize;i+=2){
+            int []parentsPoint=this.Filter();
+            //选择出父母
+            ArrayList<Integer>[] babbyRoute=this.Crossover(parentsPoint);
+            //
+            nextPopulation[i]=babbyRoute[0];
+            if(i+1<this.Popsize) nextPopulation[i+1]=babbyRoute[1];
+        }
+        this.population=nextPopulation;
+    }
+
+    private void CalculFit(){
+//        计算最短最大适应度和最短路径
+        double bestFit=0;
+        for(int i=0;i<this.Popsize;i++){
+            ArrayList arrayList=this.population[i];
+            double currentFit=this.CalculFit(arrayList);
+            if(bestFit<currentFit){
+                bestFit=currentFit;
+                this.bestRoute=population[i];
+            }
+        }
+    }
 
     private ArrayList<Integer> removeLoop(ArrayList<Integer>route){
 //        去除路径中的环
@@ -158,8 +184,7 @@ public class GaEngine {
         return route;
     }
 
-
-    public int[] Filter(){
+    private int[] Filter(){
 //        自然选择，选出father and mather 随机选取出6条路径选择出其中适应度大的两个返回他们在population 中的位置
         Random random=new Random();
         ArrayList <Integer>pointList=new ArrayList<Integer>();
@@ -194,6 +219,11 @@ public class GaEngine {
         return parents;
 
 
+    }
+
+    public ArrayList<Integer> getBestRoute(){
+//        返回当前最佳路径
+        return this.bestRoute;
     }
 
     public void Mutation(){
