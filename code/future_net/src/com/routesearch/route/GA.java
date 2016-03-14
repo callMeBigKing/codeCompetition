@@ -45,7 +45,7 @@ public class GA {
         int routeji[]=new int[601];//第一个数为路径点个数， 后续为全路径点
         int spoint[]=new int[600];//已找到最短路径的点
         int frontpoint[][]=new int[3][600];  //   0 行为后点，1行为前点,2行为前点所在列的下标
-        int routelength[][]=new int[2][600]// 0行为点，1行为最短路径长度
+        int routelength[][]=new int[2][600];// 0行为点，1行为最短路径长度
         int spointnum=1;  //找到最短路径的点的个数
         routelength[0][0]=i;//初始点i设置
         routelength[1][0]=0;
@@ -54,23 +54,23 @@ public class GA {
         spoint[0]=i;
         int i6=0;
         int a[][]=new int[3][600];    //拓展时用到的数组，0行为前点，1行为后点，2行为路径长度
-        for(i1=0,i1<graph.length,i1++) //拓展次数
+        for(i1=0;i1<graph.length;i1++) //拓展次数
         {
             int k=0;
             int s=0;
             int i4=0;
 
-            for (i2=0,i2<spointnum,i2++)//已达点
+            for (i2=0;i2<spointnum;i2++)//已达点
             {
                 a[0][i4]=spoint[i2];
-                for(i3=0,i3<graph[spoint[i2]][0].length,i3++)//已经达到的点的度
+                for(i3=0;i3<graph[spoint[i2]][0].length;i3++)//已经达到的点的度
                 {
                     a[1][i4]=graph[spoint[i2]][0][i3];
 
                     a[2][i4]=graph[spoint[i2]][1][i3]+routelength[1][i2];//计算路径长度
                     i4++;
                     int i5=0;
-                    for (i5=0,i5<spointnum,i5++)// 如果所找的点是已经找到最短路径的点，
+                    for (i5=0;i5<spointnum;i5++)// 如果所找的点是已经找到最短路径的点，
                                                 // 则删去该点对应的值
                     {
                         if (spoint[i5]==a[1][i4])
@@ -80,11 +80,12 @@ public class GA {
             }
             if (i4==0)    //i4为0即为无法扩充得到新的点，即没有到达目标点的通路
             {
-                break;//无通路
-                return null;
+                routeji[0]=1000;
+                return routeji;
+                //break;//无通路
             }
             s=a[2][0];
-            for (i2=0,i2<i4,i2++) //在扩充的路径中找最短的
+            for (i2=0;i2<i4;i2++) //在扩充的路径中找最短的
             {
                 if (a[2][i2]<s)
                 {
@@ -95,7 +96,7 @@ public class GA {
             spoint[spointnum]=a[1][k];//更新最短路径上的点之间的前后关系
             frontpoint[0][spointnum]=a[1][k];
             frontpoint[1][spointnum]=a[0][k];
-            for (i6=0,i6<spointnum,i6++)  //找前点在spoint中的列标
+            for (i6=0;i6<spointnum;i6++)  //找前点在spoint中的列标
             {
                 if (spoint[i6]==a[0][k])
                 {
@@ -121,7 +122,7 @@ public class GA {
         }
         routeji[i2]=i;
         routeji[0]=i2;
-        for (i1=1,i1<=i2/2,i1++)//换个方向
+        for (i1=1;i1<=i2/2;i1++)//换个方向
         {
             i3=routeji[i2+1-i1];
             routeji[i2+1-i1]=routeji[i1];
@@ -131,26 +132,30 @@ public class GA {
 
     }
 
+
+
     public void Mutation()
     {
 //        变异函数  必须要有中间节点
+        if (this.demand.length-2==0)
+            return;
         //int Popsize=population.length;
         int Dpointnum=this.demand.length-2;//必经中间节点个数
         int i;
         int s;//变异点的前节点
         int t;//变异点的后节点
-        for(i=0,i<Popsize,i+=1) //对每一个个体进行变异操作
+        for(i=0;i<Popsize;i+=1) //对每一个个体进行变异操作
         {
-            int xi=(int)(Math.random()*(Dpointnum-1)); //随机找一个必经点
+            int xi=(int)(Math.random()*(Dpointnum)); //随机找一个必经点
             int j,k;
             j=-1;
-            int s=30;
+            s=30;//路径长度小于30
             int sign=-1;
 
-            for(j=0,j<graph[demand[xi+1]][0].length,j=j+1)// 对必经点的所有后续节点
+            for(j=0;j<graph[demand[xi+1]][0].length;j=j+1)// 对必经点的所有后续节点
             {
 
-                for(k=0,k<population[i].size(),k++)  //对该基因表示的所有基因节点
+                for(k=0;k<population[i].size();k++)  //对该基因表示的所有基因节点
                 {
                     if(graph[demand[xi+1]][0][j]==population[i].get(k)
                             &graph[demand[xi+1]][1][j]<s)
@@ -175,15 +180,19 @@ public class GA {
             //路径拼接
             int m=rout_s_j[0];
             int n=rout_j_t[0];
-            for (k=m+n-4,k>=1,k--)
+            if (m>900|n>900)//  找不到拼接路径的话，则跳过该条的变异
+                continue;
+            int ss=population[i].size();
+            for (k=m+n-4;k>=1;k--)
             {
-                int ss=population[i].size();
-                population[i].set(ss-1+k,ss-1+k-(m+n-4));
+
+                population[i].set(ss-1+k,population[i].get(ss-1+k-(m+n-4)));
             }
-            for (k=3,k<=m+1,k++)
-                population[i].set(j+k-3,rout_s_j[k]);
-            for(k=m+2,k<=m+n-1)
-                population[i].set(j+k-3,rout_j_t[k-m+1]);
+            for (k=2;k<=m;k++)
+                population[i].set(j+k-2,rout_s_j[k]);
+            for(k=m+1;k<=m+n-2;k++)
+                population[i].set(j+k-2,rout_j_t[k-m+1]);
+            population[i]=this.removeLoop(population[i]);//去环
         }
 
     }
