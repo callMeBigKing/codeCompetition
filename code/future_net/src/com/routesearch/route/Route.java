@@ -40,7 +40,7 @@ public final class Route
         for(int i=0;i<maxIter;i++){
             GA.Breed();
             GA.Mutation();
-            GA.CalculFit();
+//            GA.CalculFit();
         }
         GA.CalculFit();
         ArrayList<Integer>bestRoute=GA.getBestRoute();

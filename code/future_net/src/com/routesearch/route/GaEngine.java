@@ -323,11 +323,15 @@ public class GaEngine {
         spoint[0]=i;
         int i6=0;
         int a[][]=new int[3][600];    //拓展时用到的数组，0行为前点，1行为后点，2行为路径长度
+
+        int k=0;
+        int s=0;
+        int i4=0;
         for(i1=0;i1<graph.length;i1++) //拓展次数
         {
-            int k=0;
-            int s=0;
-            int i4=0;
+            k=0;
+            s=0;
+            i4=0;
 
             for (i2=0;i2<spointnum;i2++)//已达点
             {
@@ -336,7 +340,17 @@ public class GaEngine {
                 {
                     a[1][i4]=graph[spoint[i2]][0][i3];
 
-                    a[2][i4]=graph[spoint[i2]][1][i3]+routelength[1][i2];//计算路径长度
+                    try {
+                        a[2][i4] = graph[spoint[i2]][1][i3] + routelength[1][i2];//计算路径长度
+                    }
+                    catch (Exception e){
+                        if(e.getClass()==ArrayIndexOutOfBoundsException) {
+                            System.out.println("i2:" + i2);
+                            System.out.println("i3:" + i3);
+                            System.out.println("i4:" + i4);
+                            System.exit(0);
+                        }
+                    }
                     i4++;
                     int i5=0;
                     for (i5=0;i5<spointnum;i5++)// 如果所找的点是已经找到最短路径的点，
