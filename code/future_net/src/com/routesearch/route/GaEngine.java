@@ -99,11 +99,12 @@ public class GaEngine {
                 int nextPointIndex = random.nextInt(connectNum);//注意这里的nextPointIndex只是索引不是具体的点
 //            生成[0-connectNum) 之间的整数
                 int nextPoint=graphListClon[pointer].get(nextPointIndex)[0];
-
-                route.add(nextPoint);
-                graphListClon=this.RemovePoint(graphListClon,nextPoint);
-                //每次添加完成后都remove掉所有能够到该点的路径
-                pointer = nextPoint;
+                if(!route.contains(nextPoint)) {
+                    route.add(nextPoint);
+                    graphListClon = this.RemovePoint(graphListClon, nextPoint);
+                    //每次添加完成后都remove掉所有能够到该点的路径
+                    pointer = nextPoint;
+                }
 
             }
             graphListClon=null;
@@ -131,6 +132,15 @@ public class GaEngine {
         return graphListClone;
     }
 
+    private ArrayList<Integer> ListClone(ArrayList<Integer> list,int start,int end){
+//        sublist 不具有clone 效果需要手动进行clone
+        ArrayList listClone=new ArrayList(end-start);
+        for(int i=start;i<end;i++){
+            listClone.add(list.get(i));
+        }
+        return listClone;
+    }
+
     private ArrayList<int[]>[]RemovePoint(ArrayList<int[]>[]graphListClon,int point){
 //        remove掉已经选择的点
         for(int i=0;i<graphListClon.length;i++){
@@ -147,19 +157,20 @@ public class GaEngine {
 
     private ArrayList[]Crossover(int []parents) {
 //      交叉函数
-        ArrayList<Integer> father = this.population[parents[0]];
-        ArrayList<Integer> mather = this.population[parents[1]];
+        ArrayList<Integer> father = (ArrayList<Integer>) this.population[parents[0]].clone();
+        ArrayList<Integer> mather = (ArrayList<Integer>) this.population[parents[1]].clone();
 
         Set<Integer> fatherSet = new HashSet<Integer>();
         Set<Integer> matherSet = new HashSet<Integer>();
         Set<Integer> commSet = new HashSet<Integer>();
 
-        for (int i = 0; i < father.size(); i++) {
+        for (int i = 1; i < father.size()-1; i++) {
             fatherSet.add(father.get(i));
         }
-        for (int i = 0; i < mather.size(); i++) {
-            fatherSet.add(mather.get(i));
+        for (int i = 1; i < mather.size()-1; i++) {
+            matherSet.add(mather.get(i));
         }
+//        共同的中间节点不能够包括起点和终点。
 
         commSet.clear();
         commSet.addAll(fatherSet);
@@ -185,16 +196,22 @@ public class GaEngine {
                     } else iterator.next();
                     location++;
                 }
-                int point = father.indexOf(crossPoint);
-                List<Integer> subFather1 = father.subList(0, crossPoint);
-                List<Integer> subFather2 = father.subList(crossPoint, father.size());
-                List<Integer> subMather1 = mather.subList(0, crossPoint);
-                List<Integer> subMather2 = mather.subList(crossPoint, father.size());
+//              crossPoint是进行交叉的点
+                int crossPointIndexF = father.indexOf(crossPoint);
+                int crossPointIndexM = mather.indexOf(crossPoint);
+//                mather and father 的交叉点的索引
+
+                ArrayList<Integer> subFather1 =this.ListClone(father,0,crossPointIndexF);
+                ArrayList<Integer> subFather2 = this.ListClone(father,crossPointIndexF,father.size());
+                ArrayList<Integer> subMather1=this.ListClone(mather,0,crossPointIndexM);
+                ArrayList<Integer> subMather2 = this.ListClone(mather,crossPointIndexM,mather.size());
+//              这里需要注意sublist返回的是一个视图，如果对原来的list做结构性改变那么 分出来的子list sublist 也将发生变化
                 subFather1.addAll(subMather2);
                 subMather1.addAll(subFather2);
+
                 //拼接
-                father=this.removeLoop((ArrayList<Integer>) subFather1);
-                mather=this.removeLoop((ArrayList<Integer>) subMather1);
+                father=this.removeLoop( subFather1);
+                mather=this.removeLoop( subMather1);
 
 //                subFather1.addAll()
             }
@@ -238,8 +255,8 @@ public class GaEngine {
         for(int i=0;i<route.size()-1;i++){
             for(int j=route.size()-1;j>i;j--){
                 if(route.get(i).equals(route.get(j))){
-                    ArrayList<Integer>list1=(ArrayList<Integer>) route.subList(0,i);
-                    ArrayList<Integer>list2=(ArrayList<Integer>) route.subList(j+1,route.size());
+                    ArrayList<Integer>list1=this.ListClone(route,0,i);
+                    ArrayList<Integer>list2=this.ListClone(route,j+1,route.size());
                     list1.addAll(list2);
                     route=list1;
                     break;

@@ -42,7 +42,7 @@ public final class Route
             GA.Mutation();
             GA.CalculFit();
         }
-
+        GA.CalculFit();
         ArrayList<Integer>bestRoute=GA.getBestRoute();
         String str="";
         for(int i=0;i<bestRoute.size();i++){
