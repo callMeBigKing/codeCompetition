@@ -1,5 +1,6 @@
 package com.routesearch.route;
 
+import com.filetool.util.LogUtil;
 import com.sun.org.apache.bcel.internal.generic.GOTO;
 import sun.misc.Sort;
 
@@ -63,6 +64,7 @@ public class GaEngine {
         population=new ArrayList[this.Popsize];
         for(int i=0;i<this.Popsize;i++){
             population[i]=this.CreateOneRoute();
+
         }
 
     }
@@ -83,8 +85,11 @@ public class GaEngine {
         int startPoint=demand[0];
         int endPoint=demand[demand.length-1];
         while(true) {
-            ArrayList<int[]>[]graphListClon=this.graphList.clone();
+            ArrayList<int[]>[]graphListClon=this.CloneGraph(this.graphList);
+
             route.add(startPoint);
+            graphListClon=this.RemovePoint(graphListClon,startPoint);
+//          删除所有能够到达起点的路径
             int pointer = startPoint;//当前所在节点
             while (pointer != endPoint) {
                 int connectNum = graphListClon[pointer].size();
@@ -94,12 +99,12 @@ public class GaEngine {
                 int nextPointIndex = random.nextInt(connectNum);//注意这里的nextPointIndex只是索引不是具体的点
 //            生成[0-connectNum) 之间的整数
                 int nextPoint=graphListClon[pointer].get(nextPointIndex)[0];
-                if (!route.contains(nextPoint)) {
-                    route.add(nextPoint);
-                    graphListClon=this.RemovePoint(graphListClon,nextPoint);
-                    //每次添加完成后都remove掉
-                    pointer = nextPoint;
-                }
+
+                route.add(nextPoint);
+                graphListClon=this.RemovePoint(graphListClon,nextPoint);
+                //每次添加完成后都remove掉所有能够到该点的路径
+                pointer = nextPoint;
+
             }
             graphListClon=null;
             if(pointer==endPoint)
@@ -109,6 +114,21 @@ public class GaEngine {
             else route.clear();
         }
         return route;
+    }
+
+    private ArrayList<int[]>[] CloneGraph(ArrayList<int[]>[]graphList){
+//        遍历一下深拷贝
+        int length=graphList.length;
+        ArrayList<int[]>[]graphListClone=new ArrayList[length];
+        for(int i=0;i<length;i++){
+            int size=graphList[i].size();
+            graphListClone[i]=new ArrayList<int[]>(size);
+            for(int j=0;j<size;j++){
+                graphListClone[i].add(graphList[i].get(j).clone());
+//               数组的深拷贝和浅拷贝是一样的
+            }
+        }
+        return graphListClone;
     }
 
     private ArrayList<int[]>[]RemovePoint(ArrayList<int[]>[]graphListClon,int point){
@@ -127,8 +147,8 @@ public class GaEngine {
 
     private ArrayList[]Crossover(int []parents) {
 //      交叉函数
-        ArrayList<Integer> father = new ArrayList<Integer>();
-        ArrayList<Integer> mather = new ArrayList<Integer>();
+        ArrayList<Integer> father = this.population[parents[0]];
+        ArrayList<Integer> mather = this.population[parents[1]];
 
         Set<Integer> fatherSet = new HashSet<Integer>();
         Set<Integer> matherSet = new HashSet<Integer>();
@@ -195,6 +215,7 @@ public class GaEngine {
             //
             nextPopulation[i]=babbyRoute[0];
             if(i+1<this.Popsize) nextPopulation[i+1]=babbyRoute[1];
+//            判断一下防止种群数是奇数
         }
         this.population=nextPopulation;
     }
@@ -207,7 +228,7 @@ public class GaEngine {
             double currentFit=this.CalculFit(arrayList);
             if(bestFit<currentFit){
                 bestFit=currentFit;
-                this.bestRoute=(ArrayList) population[i];
+                this.bestRoute=this.population[i];
             }
         }
     }

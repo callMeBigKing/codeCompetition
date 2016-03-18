@@ -9,6 +9,7 @@ package com.routesearch.route;
 
 
 
+import com.filetool.util.LogUtil;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
 
@@ -28,22 +29,24 @@ public final class Route
     private static ArrayList<int[]>[] graphList;
     public static String searchRoute(String graphContent, String condition)
     {
-        int [][][]grapg=ContentTrans(graphContent);
+        int [][][]graph=ContentTrans(graphContent);
         int []demand=DemandTrans(condition);
-        GA=new GaEngine(grapg,demand,graphList);
+        GA=new GaEngine(graph,demand,graphList);
         int maxIter=100;
+        boolean flag=GA.JugeConnect();
+        LogUtil.printLog("juge end");
         GA.InitPop();
         GA.CalculFit();
         for(int i=0;i<maxIter;i++){
             GA.Breed();
-//            GA.Mutation();
+            GA.Mutation();
             GA.CalculFit();
         }
 
         ArrayList<Integer>bestRoute=GA.getBestRoute();
         String str="";
         for(int i=0;i<bestRoute.size();i++){
-            str=bestRoute.get(i).toString();
+            str+=bestRoute.get(i).toString();
             if(i!=bestRoute.size()-1)str+=",";
         }
 
