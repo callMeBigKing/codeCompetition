@@ -58,6 +58,8 @@ public class GaEngine {
 
     public void  InitPop(){
 //        初始化种群，随机产生一群从起点到终点的路径
+
+
         population=new ArrayList[this.Popsize];
         for(int i=0;i<this.Popsize;i++){
             population[i]=this.CreateOneRoute();
@@ -65,7 +67,15 @@ public class GaEngine {
 
     }
 
-    private ArrayList CreateOneRoute(){
+    public boolean JugeConnect(){
+//        判断起点和终点是否连通
+        int startPoint=this.demand[0];
+        int endPoint=this.demand[demand.length-1];
+        if(this.dijstra(startPoint,endPoint)[0]>499)return false;
+        else return true;
+    }
+
+    public ArrayList CreateOneRoute(){
         //生成一条从起点到终点的路径
 
         ArrayList<Integer>route=new ArrayList<Integer>();
@@ -81,12 +91,14 @@ public class GaEngine {
                 if (connectNum == 0) break;//路走不通了就break
 //            当前节点所连通边数
                 Random random = new Random();
-                int nextPoint = random.nextInt(connectNum);
+                int nextPointIndex = random.nextInt(connectNum);//注意这里的nextPointIndex只是索引不是具体的点
 //            生成[0-connectNum) 之间的整数
-                if (!route.contains(graphListClon[pointer].get(nextPoint)[0])) {
-                    route.add(graphListClon[pointer].get(nextPoint)[0]);
-                    graphListClon[pointer].remove(nextPoint);//每次添加完成后都remove掉
-                    pointer = this.graph[pointer][nextPoint][0];
+                int nextPoint=graphListClon[pointer].get(nextPointIndex)[0];
+                if (!route.contains(nextPoint)) {
+                    route.add(nextPoint);
+                    graphListClon=this.RemovePoint(graphListClon,nextPoint);
+                    //每次添加完成后都remove掉
+                    pointer = nextPoint;
                 }
             }
             graphListClon=null;
@@ -95,12 +107,25 @@ public class GaEngine {
                 break;
             }
             else route.clear();
-
         }
         return route;
     }
 
-    private ArrayList[] Crossover(int []parents) {
+    private ArrayList<int[]>[]RemovePoint(ArrayList<int[]>[]graphListClon,int point){
+//        remove掉已经选择的点
+        for(int i=0;i<graphListClon.length;i++){
+            for(int j=0;j<graphListClon[i].size();j++){
+                if(graphListClon[i].get(j)[0]==point){
+                    graphListClon[i].remove(j);
+                    break; //与一个点相邻的point只会出现一次所以直接break
+                }
+            }
+        }
+        return graphListClon;
+//        数组传过来的是引用，修改完成后直接再return回去就可以了。
+    }
+
+    private ArrayList[]Crossover(int []parents) {
 //      交叉函数
         ArrayList<Integer> father = new ArrayList<Integer>();
         ArrayList<Integer> mather = new ArrayList<Integer>();
