@@ -308,7 +308,7 @@ public class GaEngine {
         return this.bestRoute;
     }
 
-    private int[] dijstra(int i,int j)//迪杰斯特拉斯算法，
+    public int[] dijstra(int i,int j)//迪杰斯特拉斯算法，
     {
         int i1,i2,i3;
         int routeji[]=new int[601];//第一个数为路径点个数， 后续为全路径点
@@ -320,6 +320,7 @@ public class GaEngine {
         routelength[1][0]=0;
         frontpoint[0][0]=i;
         frontpoint[1][0]=i;
+        frontpoint[2][0]=0;
         spoint[0]=i;
         int i6=0;
         int a[][]=new int[3][600];    //拓展时用到的数组，0行为前点，1行为后点，2行为路径长度
@@ -327,7 +328,7 @@ public class GaEngine {
         int k=0;
         int s=0;
         int i4=0;
-        for(i1=0;i1<graph.length;i1++) //拓展次数
+        for(i1=0;i1<graph.length-1;i1++) //拓展次数
         {
             k=0;
             s=0;
@@ -335,32 +336,30 @@ public class GaEngine {
 
             for (i2=0;i2<spointnum;i2++)//已达点
             {
-                a[0][i4]=spoint[i2];
-                for(i3=0;i3<graph[spoint[i2]][0].length;i3++)//已经达到的点的度
-                {
-                    a[1][i4]=graph[spoint[i2]][0][i3];
 
-                    try {
-                        a[2][i4] = graph[spoint[i2]][1][i3] + routelength[1][i2];//计算路径长度
-                    }
-                    catch (Exception e){
-                        if(e.getClass()==ArrayIndexOutOfBoundsException) {
-                            System.out.println("i2:" + i2);
-                            System.out.println("i3:" + i3);
-                            System.out.println("i4:" + i4);
-                            System.exit(0);
-                        }
-                    }
+                for(i3=0;i3<graph[spoint[i2]].length;i3++)//已经达到的点的度
+                {
+                    a[0][i4]=spoint[i2];
+                    a[1][i4]=graph[spoint[i2]][i3][0];
+
+
+                    a[2][i4] = graph[spoint[i2]][i3][1] + routelength[1][i2];//计算路径长度
+                    //System.out.println(i4);
                     i4++;
                     int i5=0;
                     for (i5=0;i5<spointnum;i5++)// 如果所找的点是已经找到最短路径的点，
                     // 则删去该点对应的值
                     {
-                        if (spoint[i5]==a[1][i4])
-                            i4--;
+
+                        if (spoint[i5]==a[1][i4-1])
+                        {   i4--;
+                            break;
+                        }
+
                     }
                 }
             }
+
             if (i4==0)    //i4为0即为无法扩充得到新的点，即没有到达目标点的通路
             {
                 routeji[0]=1000;
@@ -368,6 +367,7 @@ public class GaEngine {
                 //break;//无通路
             }
             s=a[2][0];
+            k=0;
             for (i2=0;i2<i4;i2++) //在扩充的路径中找最短的
             {
                 if (a[2][i2]<s)
@@ -376,12 +376,13 @@ public class GaEngine {
                     k=i2;
                 }
             }
+
             spoint[spointnum]=a[1][k];//更新最短路径上的点之间的前后关系
             frontpoint[0][spointnum]=a[1][k];
             frontpoint[1][spointnum]=a[0][k];
             for (i6=0;i6<spointnum;i6++)  //找前点在spoint中的列标
             {
-                if (spoint[i6]==a[0][k])
+                if (frontpoint[0][i6]==frontpoint[1][spointnum])
                 {
                     frontpoint[2][spointnum]=i6;
                     break;
@@ -391,8 +392,13 @@ public class GaEngine {
             routelength[1][spointnum]=a[2][k];
             spointnum++;
 
-            if (a[1][k]==j)//如果新更的点为目标点，则路径寻找过程结束
+            if (frontpoint[0][spointnum-1]==j)//如果新更的点为目标点，则路径寻找过程结束
                 break;
+        }
+
+        if(i1==graph.length-1){//无通路
+            routeji[0]=1001;
+            return routeji;
         }
 
         i1=spointnum-1;
@@ -430,7 +436,7 @@ public class GaEngine {
         int t;//变异点的后节点
         for(i=0;i<Popsize;i+=1) //对每一个个体进行变异操作
         {
-            if (Math.random()>this.mutationRate) {
+            if (Math.random()>this.mutationRate|population[i].size()<3) {
                 continue;
             }
             int xi=(int)(Math.random()*(Dpointnum)); //随机找一个必经点
@@ -439,23 +445,26 @@ public class GaEngine {
             s=30;//路径长度小于30
             int sign=-1;
 
-            for(j=0;j<graph[demand[xi+1]][0].length;j=j+1)// 对必经点的所有后续节点
+            for(j=0;j<graph[demand[xi+1]].length;j=j+1)// 对必经点的所有后续节点
             {
 
                 for(k=0;k<population[i].size();k++)  //对该基因表示的所有基因节点
                 {
-                    if(graph[demand[xi+1]][0][j]==population[i].get(k)
-                            &graph[demand[xi+1]][1][j]<s)
+                    if(graph[demand[xi+1]][j][0]==population[i].get(k)
+                            &graph[demand[xi+1]][j][1]<s)
                     {
-                        s=graph[demand[xi+1]][1][j];
+                        s=graph[demand[xi+1]][j][1];
                         sign=k;
+                        break;
                     }
+                    if(graph[demand[xi+1]][j][0]==population[i].get(k))
+                    {break;}
                 }
             }
-            if (sign>-0.5)
+            if (sign>-0.5&sign>0&sign<population[i].size()-1)
                 j=sign;
             else
-                j=(int)Math.random()*(population[i].size()-2)+1;
+                j=(int)(Math.random()*(population[i].size()-2.001))+1;
 
             s=population[i].get(j-1);                //j的前一个节点
             t=population[i].get(j+1);            //j的后一个节点
@@ -469,16 +478,16 @@ public class GaEngine {
             int n=rout_j_t[0];
             if (m>900|n>900)//  找不到拼接路径的话，则跳过该条的变异
                 continue;
-            int ss=population[i].size();
-            for (k=m+n-4;k>=1;k--)
+            int ss;
+            for (k=2;k<=m-1;k++)
             {
-
-                population[i].set(ss-1+k,population[i].get(ss-1+k-(m+n-4)));
+                population[i].add(j+k-2,rout_s_j[k]);
             }
-            for (k=2;k<=m;k++)
-                population[i].set(j+k-2,rout_s_j[k]);
-            for(k=m+1;k<=m+n-2;k++)
-                population[i].set(j+k-2,rout_j_t[k-m+1]);
+            for (k=2;k<=n-1;k++)
+            {
+                population[i].add(j+m-2+1+k-2,rout_j_t[k]);
+            }
+
             population[i]=this.removeLoop(population[i]);//去环
         }
 
