@@ -14,7 +14,7 @@ public class GaEngine {
 
     private int Popsize=100; //种群规模
     private double crossRate=0.9;//交叉概率
-    private double mutationRate=0.2;//变异概率
+    private double mutationRate=0.1;//变异概率
     private ArrayList bestRoute;//当前最短路径 route[0]存放begin route[end]存放end point  route[1-end]存中间节点
     private int []demand;//要求哦 route[0]存放begin route[end]存放end point  route[1-end]存中间节点
     private Set<Integer> demandSet;//中间点集合
@@ -308,6 +308,7 @@ public class GaEngine {
         return this.bestRoute;
     }
 
+
     public int[] dijstra(int i,int j)//迪杰斯特拉斯算法，
     {
         int i1,i2,i3;
@@ -440,6 +441,8 @@ public class GaEngine {
                 continue;
             }
             int xi=(int)(Math.random()*(Dpointnum)); //随机找一个必经点
+            if (population[i].indexOf(demand[xi+1])>-0.5)
+                continue;
             int j,k;
             s=30;//路径长度小于30
             int sign=-1;
@@ -477,12 +480,12 @@ public class GaEngine {
             int n=rout_j_t[0];
             if (m>900|n>900)//  找不到拼接路径的话，则跳过该条的变异
                 continue;
-
+            population[i].set(j,demand[xi+1]);
             for (k=2;k<=m-1;k++)
             {
                 population[i].add(j+k-2,rout_s_j[k]);
             }
-            population[i].set(j+m-2,demand[xi+1]);
+
             for (k=2;k<=n-1;k++)
             {
                 population[i].add(j+m-2+1+k-2,rout_j_t[k]);
