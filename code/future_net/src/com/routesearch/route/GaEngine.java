@@ -441,7 +441,6 @@ public class GaEngine {
             }
             int xi=(int)(Math.random()*(Dpointnum)); //随机找一个必经点
             int j,k;
-            j=-1;
             s=30;//路径长度小于30
             int sign=-1;
 
@@ -461,7 +460,7 @@ public class GaEngine {
                     {break;}
                 }
             }
-            if (sign>-0.5&sign>0&sign<population[i].size()-1)
+            if (sign>0&sign<population[i].size()-1)
                 j=sign;
             else
                 j=(int)(Math.random()*(population[i].size()-2.001))+1;
@@ -478,11 +477,12 @@ public class GaEngine {
             int n=rout_j_t[0];
             if (m>900|n>900)//  找不到拼接路径的话，则跳过该条的变异
                 continue;
-            int ss;
+
             for (k=2;k<=m-1;k++)
             {
                 population[i].add(j+k-2,rout_s_j[k]);
             }
+            population[i].set(j+m-2,demand[xi+1]);
             for (k=2;k<=n-1;k++)
             {
                 population[i].add(j+m-2+1+k-2,rout_j_t[k]);
