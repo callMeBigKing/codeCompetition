@@ -32,25 +32,48 @@ public final class Route
         int [][][]graph=ContentTrans(graphContent);
         int []demand=DemandTrans(condition);
         GA=new GaEngine(graph,demand,graphList);
+        int maxIter=400;
+//        boolean flag=GA.JugeConnect();
+        GA.InitPop();
+        for(int i=0;i<maxIter;i++){
+            GA.Breed();
+            GA.Mutation();
+
+        }
+        GA.CalculFit();
+        ArrayList<Integer>bestRoute=GA.getBestRoute();
+
+//        boolean flage= GA.JugeDemand();
+//        if(flage==false){
+//            return "NA";
+//        }
+//        else {
+//            String str = "";
+//            for (int i = 0; i < bestRoute.size(); i++) {
+//                str += bestRoute.get(i).toString();
+//                if (i != bestRoute.size() - 1) str += ",";
+//            }
+//            System.out.print("weight:"+ GA.getTotalWeight()+" ");
+//            return (str);
+//        }
+        String str = "";
+        for (int i = 0; i < bestRoute.size(); i++) {
+            str += bestRoute.get(i).toString();
+            if (i != bestRoute.size() - 1) str += ",";
+        }
+        System.out.print("weight:"+ GA.getTotalWeight()+" ");
+        return (str);
+    }
+
+    public static int[] Test(String graphContent, String condition){
+        int [][][]graph=ContentTrans(graphContent);
+        int []demand=DemandTrans(condition);
+        GA=new GaEngine(graph,demand,graphList);
         int maxIter=100;
         boolean flag=GA.JugeConnect();
         LogUtil.printLog("juge end");
         GA.InitPop();
-        GA.CalculFit();
-        for(int i=0;i<maxIter;i++){
-            GA.Breed();
-            GA.Mutation();
-//            GA.CalculFit();
-        }
-        GA.CalculFit();
-        ArrayList<Integer>bestRoute=GA.getBestRoute();
-        String str="";
-        for(int i=0;i<bestRoute.size();i++){
-            str+=bestRoute.get(i).toString();
-            if(i!=bestRoute.size()-1)str+=",";
-        }
-
-        return str;
+        return  GA.dijstra(1,8);
     }
 
     public static int [][][] ContentTrans(String conditionContent){
@@ -59,23 +82,20 @@ public final class Route
         String [][]contentStr=new String[edge.length][4];
         int [][]contenInt=new int[edge.length][3];
         int maxPoint=0;
-
-
         for(int i=0;i<edge.length;i++) {
             contentStr[i]=edge[i].split(",");
             for(int j=1;j<4;j++){
                 contenInt[i][j-1]=Integer.parseInt(contentStr[i][j]);
-                if(maxPoint<contenInt[i][j-1])maxPoint=contenInt[i][j-1]+1;
+                if(maxPoint<contenInt[i][j-1])maxPoint=contenInt[i][j-1];
+//                注意这里有加1的内容
             }
-
-
-
         }
+        maxPoint+=1;
         ArrayList<int []>[] contentArr=new ArrayList[maxPoint];
 //      这个 arrlist 中存的是int[2]类型的数组 i
-        for(int i=0;i<contentStr.length;i++) {
+        for(int i=0;i<contenInt.length;i++) {
             //            遍历contenInt
-//           分两种 contenInt[i][0]为起点 contenInt[i][1]为终点
+//            contenInt[i][0]为起点 contenInt[i][1]为终点
             int []first={contenInt[i][1],contenInt[i][2]};
             if(contentArr[contenInt[i][0]]!=null){
                 contentArr[contenInt[i][0]].add(first);
@@ -84,8 +104,6 @@ public final class Route
                 contentArr[contenInt[i][0]]=new ArrayList<int[]>();
                 contentArr[contenInt[i][0]].add(first);
             }
-
-
         }
         graphList=contentArr;
         int [][][] graph=new int[maxPoint][][];
