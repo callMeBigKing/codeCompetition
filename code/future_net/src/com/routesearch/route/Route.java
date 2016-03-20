@@ -32,11 +32,13 @@ public final class Route
         int [][][]graph=ContentTrans(graphContent);
         int []demand=DemandTrans(condition);
         GA=new GaEngine(graph,demand,graphList);
-        int maxIter=20;
+        int maxIter=500;
+
 //        boolean flag=GA.JugeConnect();
         GA.InitPop();
         for(int i=0;i<maxIter;i++){
             GA.Breed();
+            System.out.println( "  iter:"+i);
             GA.Mutation();
 
         }

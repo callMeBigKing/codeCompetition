@@ -10,11 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ba08f8e3-52ff-4bc3-8fa1-9dc4bcecf2d4" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/future_net/com/filetool/main/Main.class" afterPath="$PROJECT_DIR$/out/production/future_net/com/filetool/main/Main.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/future_net/com/routesearch/route/GaEngine.class" afterPath="$PROJECT_DIR$/out/production/future_net/com/routesearch/route/GaEngine.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/future_net/com/routesearch/route/Route.class" afterPath="$PROJECT_DIR$/out/production/future_net/com/routesearch/route/Route.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/code/future_net/src/com/filetool/main/Main.java" afterPath="$PROJECT_DIR$/code/future_net/src/com/filetool/main/Main.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GA.java" afterPath="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GA.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GaEngine.java" afterPath="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GaEngine.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/Route.java" afterPath="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/Route.java" />
@@ -44,10 +42,14 @@
       <file leaf-file-name="Route.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/Route.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.9534883">
-              <caret line="34" column="21" selection-start-line="34" selection-start-column="21" selection-end-line="34" selection-end-column="21" />
+            <state vertical-scroll-proportion="-5.0697675">
+              <caret line="122" column="36" selection-start-line="122" selection-start-column="25" selection-end-line="122" selection-end-column="36" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="method#searchRoute#0;class#Route#0" expanded="false" />
+                <element signature="method#Test#0;class#Route#0" expanded="false" />
+                <element signature="method#ContentTrans#0;class#Route#0" expanded="false" />
+                <element signature="method#DemandTrans#0;class#Route#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -56,22 +58,31 @@
       <file leaf-file-name="GaEngine.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GaEngine.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.3478261">
-              <caret line="56" column="43" selection-start-line="56" selection-start-column="43" selection-end-line="56" selection-end-column="43" />
+            <state vertical-scroll-proportion="0.5045249">
+              <caret line="182" column="8" selection-start-line="182" selection-start-column="8" selection-end-line="182" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="method#GaEngine#0;class#GaEngine#0" expanded="false" />
                 <element signature="method#CalculWeight#0;class#GaEngine#0" expanded="false" />
-                <element signature="method#InitPop#0;class#GaEngine#0" expanded="false" />
                 <element signature="method#CreateOneRoute#0;class#GaEngine#0" expanded="false" />
-                <element signature="method#CloneGraph#0;class#GaEngine#0" expanded="false" />
-                <element signature="method#ListClone#0;class#GaEngine#0" expanded="false" />
+                <element signature="e#3135#3144#0" expanded="true" />
                 <element signature="method#RemovePoint#0;class#GaEngine#0" expanded="false" />
+                <element signature="e#6122#6131#0" expanded="true" />
+                <element signature="e#6184#6193#0" expanded="true" />
                 <element signature="method#Crossover#0;class#GaEngine#0" expanded="false" />
+                <element signature="e#8690#8699#0" expanded="true" />
+                <element signature="e#8752#8761#0" expanded="true" />
+                <element signature="e#8809#8818#0" expanded="true" />
+                <element signature="e#8866#8875#0" expanded="true" />
+                <element signature="e#8921#8930#0" expanded="true" />
                 <element signature="method#RouteCompetition#0;class#GaEngine#0" expanded="false" />
                 <element signature="method#removeLoop#0;class#GaEngine#0" expanded="false" />
                 <element signature="method#Filter#0;class#GaEngine#0" expanded="false" />
+                <element signature="e#14350#14359#0" expanded="true" />
                 <element signature="method#dijstra#0;class#GaEngine#0" expanded="false" />
+                <element signature="e#22209#22218#0" expanded="true" />
+                <element signature="method#ReShapeGraph#0;class#GaEngine#0" expanded="false" />
+                <element signature="method#JugeDemand#0;class#GaEngine#0" expanded="false" />
+                <element signature="method#dijstra#1;class#GaEngine#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -91,8 +102,11 @@
         <entry file="file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/test.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-              <folding />
+              <caret line="25" column="27" selection-start-line="25" selection-start-column="27" selection-end-line="25" selection-end-column="27" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#398#407#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -187,8 +201,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GA.java" />
-        <option value="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/test.java" />
         <option value="$PROJECT_DIR$/code/future_net/src/com/filetool/main/Main.java" />
+        <option value="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/test.java" />
         <option value="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/Route.java" />
         <option value="$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GaEngine.java" />
       </list>
@@ -803,7 +817,7 @@
       <workItem from="1458357651967" duration="9543000" />
       <workItem from="1458369397981" duration="4036000" />
       <workItem from="1458374216472" duration="318000" />
-      <workItem from="1458456766092" duration="2374000" />
+      <workItem from="1458456766092" duration="17513000" />
     </task>
     <task id="LOCAL-00001" summary="3/13  11:21">
       <created>1457839321459</created>
@@ -871,23 +885,35 @@
       <option name="project" value="LOCAL" />
       <updated>1458304174926</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="@gosty">
+      <created>1458459175259</created>
+      <option name="number" value="00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1458459175259</updated>
+    </task>
+    <task id="LOCAL-00013" summary="@gosty">
+      <created>1458459450091</created>
+      <option name="number" value="00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1458459450091</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="122326000" />
+    <option name="totallyTimeSpent" value="137465000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="1942" height="1042" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33804476" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5547703" sideWeight="0.12604167" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.036513545" sideWeight="0.49791667" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5547703" sideWeight="0.87395835" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.38633686" sideWeight="0.140625" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.60777384" sideWeight="0.49583334" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.38633686" sideWeight="0.859375" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2140625" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -896,7 +922,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4075383" sideWeight="0.47916666" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4075383" sideWeight="0.47708333" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -927,27 +953,21 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GaEngine.java</url>
-          <line>100</line>
-          <properties />
-          <option name="timeStamp" value="59" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GaEngine.java</url>
-          <line>250</line>
+          <line>321</line>
           <properties />
           <option name="timeStamp" value="77" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/Route.java</url>
-          <line>33</line>
+          <url>file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GaEngine.java</url>
+          <line>744</line>
           <properties />
-          <option name="timeStamp" value="91" />
+          <option name="timeStamp" value="93" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="93" />
+      <option name="time" value="94" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -962,6 +982,10 @@
           <caret line="17" column="7" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#searchRoute#0;class#Route#0" expanded="false" />
+            <element signature="method#Test#0;class#Route#0" expanded="false" />
+            <element signature="method#ContentTrans#0;class#Route#0" expanded="false" />
+            <element signature="method#DemandTrans#0;class#Route#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1042,6 +1066,10 @@
           <caret line="17" column="7" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#searchRoute#0;class#Route#0" expanded="false" />
+            <element signature="method#Test#0;class#Route#0" expanded="false" />
+            <element signature="method#ContentTrans#0;class#Route#0" expanded="false" />
+            <element signature="method#DemandTrans#0;class#Route#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1114,6 +1142,10 @@
           <caret line="17" column="7" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#searchRoute#0;class#Route#0" expanded="false" />
+            <element signature="method#Test#0;class#Route#0" expanded="false" />
+            <element signature="method#ContentTrans#0;class#Route#0" expanded="false" />
+            <element signature="method#DemandTrans#0;class#Route#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1186,6 +1218,10 @@
           <caret line="17" column="7" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#searchRoute#0;class#Route#0" expanded="false" />
+            <element signature="method#Test#0;class#Route#0" expanded="false" />
+            <element signature="method#ContentTrans#0;class#Route#0" expanded="false" />
+            <element signature="method#DemandTrans#0;class#Route#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1322,10 +1358,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/test.java">
+    <entry file="file://$PROJECT_DIR$/code/future_net/src/com/filetool/main/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <caret line="35" column="16" selection-start-line="35" selection-start-column="16" selection-end-line="35" selection-end-column="40" />
           <folding />
         </state>
       </provider>
@@ -1338,42 +1374,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/code/future_net/src/com/filetool/main/Main.java">
+    <entry file="file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/test.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="35" column="16" selection-start-line="35" selection-start-column="16" selection-end-line="35" selection-end-column="40" />
-          <folding />
+          <caret line="25" column="27" selection-start-line="25" selection-start-column="27" selection-end-line="25" selection-end-column="27" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#398#407#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/Route.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.9534883">
-          <caret line="34" column="21" selection-start-line="34" selection-start-column="21" selection-end-line="34" selection-end-column="21" />
+        <state vertical-scroll-proportion="-5.0697675">
+          <caret line="122" column="36" selection-start-line="122" selection-start-column="25" selection-end-line="122" selection-end-column="36" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#searchRoute#0;class#Route#0" expanded="false" />
+            <element signature="method#Test#0;class#Route#0" expanded="false" />
+            <element signature="method#ContentTrans#0;class#Route#0" expanded="false" />
+            <element signature="method#DemandTrans#0;class#Route#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/code/future_net/src/com/routesearch/route/GaEngine.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.3478261">
-          <caret line="56" column="43" selection-start-line="56" selection-start-column="43" selection-end-line="56" selection-end-column="43" />
+        <state vertical-scroll-proportion="0.5045249">
+          <caret line="182" column="8" selection-start-line="182" selection-start-column="8" selection-end-line="182" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#GaEngine#0;class#GaEngine#0" expanded="false" />
             <element signature="method#CalculWeight#0;class#GaEngine#0" expanded="false" />
-            <element signature="method#InitPop#0;class#GaEngine#0" expanded="false" />
             <element signature="method#CreateOneRoute#0;class#GaEngine#0" expanded="false" />
-            <element signature="method#CloneGraph#0;class#GaEngine#0" expanded="false" />
-            <element signature="method#ListClone#0;class#GaEngine#0" expanded="false" />
+            <element signature="e#3135#3144#0" expanded="true" />
             <element signature="method#RemovePoint#0;class#GaEngine#0" expanded="false" />
+            <element signature="e#6122#6131#0" expanded="true" />
+            <element signature="e#6184#6193#0" expanded="true" />
             <element signature="method#Crossover#0;class#GaEngine#0" expanded="false" />
+            <element signature="e#8690#8699#0" expanded="true" />
+            <element signature="e#8752#8761#0" expanded="true" />
+            <element signature="e#8809#8818#0" expanded="true" />
+            <element signature="e#8866#8875#0" expanded="true" />
+            <element signature="e#8921#8930#0" expanded="true" />
             <element signature="method#RouteCompetition#0;class#GaEngine#0" expanded="false" />
             <element signature="method#removeLoop#0;class#GaEngine#0" expanded="false" />
             <element signature="method#Filter#0;class#GaEngine#0" expanded="false" />
+            <element signature="e#14350#14359#0" expanded="true" />
             <element signature="method#dijstra#0;class#GaEngine#0" expanded="false" />
+            <element signature="e#22209#22218#0" expanded="true" />
+            <element signature="method#ReShapeGraph#0;class#GaEngine#0" expanded="false" />
+            <element signature="method#JugeDemand#0;class#GaEngine#0" expanded="false" />
+            <element signature="method#dijstra#1;class#GaEngine#0" expanded="false" />
           </folding>
         </state>
       </provider>
