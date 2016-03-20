@@ -505,7 +505,18 @@ public class GaEngine {
             if (Math.random() > this.mutationRate | population[i].size() < 3) {
                 continue;
             }
+            if (CalculFit(population[i])>=Dpointnum)//添加没有的点
+            continue;
+            int suiji;
+
             int xi = (int) (Math.random() * (Dpointnum)); //随机找一个必经点
+            for (suiji=0;suiji<Dpointnum;suiji++)
+            {
+                if(population[i].indexOf(demand[xi + 1])>-0.5)
+                    xi=(xi+1)%Dpointnum;
+            }
+            if (suiji==Dpointnum)
+                continue;                          //添加没有的点
             int j, k;
             j = -1;
             s = 30;//路径长度小于30
