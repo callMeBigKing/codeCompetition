@@ -3,6 +3,9 @@ package com.filetool.main;
 import com.filetool.util.FileUtil;
 import com.filetool.util.LogUtil;
 import com.routesearch.route.Route;
+import com.routesearch.route.Tool;
+
+import java.util.ArrayList;
 
 /**
  * 工具入口
@@ -27,6 +30,8 @@ public class Main {
         // 读取输入文件
         String graphContent = FileUtil.read(graphFilePath, null);
         String conditionContent = FileUtil.read(conditionFilePath, null);
+        ArrayList<int[]>[]graph=Route.ContentTrans(graphContent);
+
 //         功能实现入口
         for (int i=0;i<1;i++) {
             String resultStr = Route.searchRoute(graphContent, conditionContent);
