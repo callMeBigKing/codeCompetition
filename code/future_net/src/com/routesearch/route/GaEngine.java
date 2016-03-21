@@ -12,7 +12,7 @@ import java.util.*;
 public class GaEngine {
     private int totalWeight;
     //    权重
-    private int Popsize = 500; //种群规模
+    private int Popsize = 800; //种群规模
     private double crossRate = 0.9;//交叉概率
     private double mutationRate = 0.3;//变异概率
     private ArrayList bestRoute;//当前最短路径 route[0]存放begin route[end]存放end point  route[1-end]存中间节点
@@ -238,7 +238,13 @@ public class GaEngine {
 
         babby1 = this.removeLoop(subFather1);
         babby2 = this.removeLoop(subMather1);
-
+//        ArrayList<Integer>[] competitions = new ArrayList[4];
+//        competitions[0] = babby1;
+//        competitions[1] = babby2;
+//        competitions[2] = father;
+//        competitions[3] = mather;
+//        competitions = this.RouteCompetition(competitions);
+//        return new ArrayList[]{competitions[0],competitions[1]} ;
         return new ArrayList[]{babby1,babby2} ;
 
 
