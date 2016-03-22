@@ -2,6 +2,7 @@ package com.routesearch.route;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Created by imgos on 2016/3/20.
@@ -24,8 +25,11 @@ public final class Tool {
         return graphListClone;
     }
 
+
+
     public static ArrayList<Integer> ListClone(ArrayList<Integer> list, int start, int end) {
 //        sublist 不具有clone 效果需要手动进行clone
+//        [start,end);
         ArrayList listClone = new ArrayList(end - start);
         for (int i = start; i < end; i++) {
             listClone.add(list.get(i));
@@ -47,7 +51,6 @@ public final class Tool {
         return graphListClon;
 //        数组传过来的是引用，修改完成后直接再return回去就可以了。
     }
-
 
     public static ArrayList<Integer> dijstra(ArrayList<int[]>[]graphList,int i, int j)//迪杰斯特拉斯算法，
     {

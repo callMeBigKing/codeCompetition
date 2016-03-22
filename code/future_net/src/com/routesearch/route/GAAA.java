@@ -1,6 +1,8 @@
 package com.routesearch.route;
 
 import java.util.*;
+import com.filetool.util.LogUtil;
+import com.sun.org.apache.xpath.internal.FoundIndex;
 
 /**
  * Created by imgos on 2016/3/20.
@@ -9,7 +11,7 @@ public class GAAA {
     //    ga
     private int totalWeight;
     //    权重
-    private int Popsize = 500; //种群规模
+    private int Popsize = 200; //种群规模
     private double crossRate = 0.9;//交叉概率
     private double mutationRate = 0.5;//变异概率
     private ArrayList bestRoute;//当前最短路径 route[0]存放begin route[end]存放end point  route[1-end]存中间节点
@@ -22,6 +24,7 @@ public class GAAA {
 //    图中点的个数
     private int edgeNum;
 //    图中边的个数
+    ArrayList<Integer>[][]dijstraRoute;
     public GAAA(ArrayList<int[]>[] graphList, int[] demand) {
 //        构造函数传入graph
         this.demand = demand;
@@ -34,8 +37,17 @@ public class GAAA {
 
     public void setMsg(int pointNum,int edgeNum){
 //        设置图中边和点的个数
+        if(pointNum>100){
+            this.Popsize=pointNum*3;
+        }
         this.pointNum=pointNum;
         this.edgeNum=edgeNum;
+        this.dijstraRoute=new ArrayList[pointNum][pointNum];
+        for(int i=0;i<pointNum;i++){
+            for(int j=0;j<pointNum;j++){
+                dijstraRoute[i][j]=new ArrayList<Integer>();
+            }
+        }
     }
 
     private double CalculFit(ArrayList<Integer> route) {
@@ -74,7 +86,9 @@ public class GAAA {
 //        初始化种群，随机产生一群从起点到终点的路径
         population = new ArrayList[this.Popsize];
         for (int i = 0; i < this.Popsize; i++) {
+
             population[i] = this.CreateOneRoute();
+
         }
     }
 
@@ -126,70 +140,80 @@ public class GAAA {
     private ArrayList[] Crossover(int[] parents) {
 
 //        另外一种交叉规范
+
         ArrayList<Integer> father = (ArrayList<Integer>) this.population[parents[0]].clone();
         ArrayList<Integer> mather = (ArrayList<Integer>) this.population[parents[1]].clone();
         ArrayList<Integer> babby1 = new ArrayList<Integer>();
         ArrayList<Integer> babby2 = new ArrayList<Integer>();
+
         Random random = new Random();
-        int fPointIndex = random.nextInt(father.size() - 2) + 1;
+        if(random.nextDouble()<this.crossRate) {
+            int fPointIndex = random.nextInt(father.size() - 2) + 1;
 //        生成一个【1~~size-1） 的点  father的交叉点
-        int mPointIndex = random.nextInt(mather.size() - 2) + 1;
+            int mPointIndex = random.nextInt(mather.size() - 2) + 1;
 //        同上
-        int fPoint = father.get(fPointIndex);
-        int fPointNext = father.get(fPointIndex + 1);
-        int mPoint = mather.get(mPointIndex);
-        int mPointNext = mather.get(mPointIndex + 1);
+            int fPoint = father.get(fPointIndex);
+            int fPointNext = father.get(fPointIndex + 1);
+            int mPoint = mather.get(mPointIndex);
+            int mPointNext = mather.get(mPointIndex + 1);
 //        判断这几个点是不是连通的，不是的话就用dj 得到一条最短路径
-        boolean fFlag = false;  //判断父亲sub1和母亲sub2是否连通
-        boolean mFlag = false;
-        for (int i = 0; i < graphList[fPoint].size(); i++) {
-            if (this.graphList[fPoint].get(i)[0] == mPointNext) {
-                fFlag = true;
-                break;
+            boolean fFlag = false;  //判断父亲sub1和母亲sub2是否连通
+            boolean mFlag = false;
+            for (int i = 0; i < graphList[fPoint].size(); i++) {
+                if (this.graphList[fPoint].get(i)[0] == mPointNext) {
+                    fFlag = true;
+                    break;
+                }
             }
-        }
 
-        for (int i = 0; i < graphList[mPoint].size(); i++) {
-            if (this.graphList[mPoint].get(i)[0] == fPointNext) {
-                mFlag = true;
-                break;
+            for (int i = 0; i < graphList[mPoint].size(); i++) {
+                if (this.graphList[mPoint].get(i)[0] == fPointNext) {
+                    mFlag = true;
+                    break;
+                }
             }
-        }
 
 
-        ArrayList<Integer> subFather1 = Tool.ListClone(father, 0, fPointIndex + 1);
+            ArrayList<Integer> subFather1 = Tool.ListClone(father, 0, fPointIndex + 1);
 //            前面的默认设置是subFather1保留fPointIndex，subMather1保留mPointIndex
-        ArrayList<Integer> subMather2 = Tool.ListClone(mather, mPointIndex + 1, mather.size());
-        subFather1.addAll(subMather2);
-        if (!fFlag) {
+            ArrayList<Integer> subMather2 = Tool.ListClone(mather, mPointIndex + 1, mather.size());
+            subFather1.addAll(subMather2);
+            if (!fFlag) {
 //           不能够直接连接起来 寻找一条最短路径
-            ArrayList<Integer> route = Tool.dijstra(this.graphList,fPoint, mPointNext);
+                ArrayList<Integer> route = this.dijstra(fPoint, mPointNext);
 
-            for (int i = 0; i < route.size() - 2; i++) {
-                subFather1.add(i + 1 + fPointIndex, route.get(i + 1));
+
+                for (int i = 0; i < route.size() - 2; i++) {
+                    subFather1.add(i + 1 + fPointIndex, route.get(i + 1));
+                }
+                //          如果size为0 则没有两个点是不连通的。
+
+                if (route.size() == 0) subFather1 = father;
             }
-        }
 
-
-        ArrayList<Integer> subMather1 = Tool.ListClone(mather, 0, mPointIndex + 1);
+            ArrayList<Integer> subMather1 = Tool.ListClone(mather, 0, mPointIndex + 1);
 //            前面的默认设置是subFather1保留fPointIndex，subMather1保留mPointIndex
-        ArrayList<Integer> subFather2 = Tool.ListClone(father, fPointIndex + 1, father.size());
-        subMather1.addAll(subFather2);
+            ArrayList<Integer> subFather2 = Tool.ListClone(father, fPointIndex + 1, father.size());
+            subMather1.addAll(subFather2);
 
-        if (!mFlag) {
+            if (!mFlag) {
 //            不能够连接起来
-            ArrayList<Integer> route = Tool.dijstra(this.graphList,mPoint, fPointNext);
+                ArrayList<Integer> route = this.dijstra(mPoint, fPointNext);
 
-            for (int i = 0; i < route.size() - 2; i++) {
-                subMather1.add(i + 1 + mPointIndex, route.get(i + 1));
+                for (int i = 0; i < route.size() - 2; i++) {
+                    subMather1.add(i + 1 + mPointIndex, route.get(i + 1));
+                }
+
+                //      sss     如果size为0 则没有两个点是不连通的。
+                if (route.size() == 0) subMather1 = mather;
             }
 
+            babby1 = this.removeLoop(subFather1);
+            babby2 = this.removeLoop(subMather1);
+
+            return new ArrayList[]{babby1, babby2};
         }
-
-        babby1 = this.removeLoop(subFather1);
-        babby2 = this.removeLoop(subMather1);
-
-        return new ArrayList[]{babby1, babby2};
+        else return new ArrayList[]{father, mather};
 
     }
 
@@ -198,8 +222,7 @@ public class GAAA {
 
         ArrayList[] nextPopulation = new ArrayList[this.Popsize];
         this.CalculFit();
-        System.out.println(Tool.Connected(graphList,bestRoute)+" 符合规范");
-        System.out.print(this.CalculFit(this.getBestRoute()));
+//        System.out.print(this.CalculFit(this.getBestRoute()));
         nextPopulation[0] = this.getBestRoute();
 //      循环从1开始把上一代最好的个体留下来
         for (int i = 1; i < this.Popsize; i += 2) {
@@ -226,7 +249,6 @@ public class GAAA {
                 this.bestRoute = this.population[i];
             }
         }
-
     }
 
     private ArrayList<Integer> removeLoop(ArrayList<Integer> route) {
@@ -331,10 +353,12 @@ public class GAAA {
         int t;//变异点的后节点
         //最大适应度点不变异
 
+        ArrayList<Integer> best = Tool.ListClone(population[0], 0, population[0].size());
+
 
         for (i = 1; i < Popsize; i += 1) //对每一个个体进行变异操作
         {
-            if (Math.random() > this.mutationRate | population[i].size() < 3) {
+            if (Math.random() > this.mutationRate || population[i].size() < 3) {
                 continue;
             }
             int xi = (int) (Math.random() * (Dpointnum)); //随机找一个必经点
@@ -364,30 +388,103 @@ public class GAAA {
                     }
                 }
             }
-            if (j <= 0 | j >= population[i].size() - 1) {
-                j = (int) (Math.random() * (population[i].size()-2))+1;
+            if (j <= 0 || j >= population[i].size() - 1) {
+                j = (int) (Math.random() * (population[i].size() - 2)) + 1;
             }
             s = population[i].get(j - 1);
             t = population[i].get(j + 1);
-            ArrayList<int[]>[] newGrah=this.ReShapeGraph(population[i],s,t);
-            ArrayList<Integer> rout_s_d =Tool.dijstra(newGrah,s, demand[xi + 1]);
-            ArrayList<Integer> rout_d_t = Tool.dijstra(newGrah,demand[xi + 1], t);
-            if (rout_d_t.size()==0|rout_s_d.size()==0)
+//            ArrayList<int[]>[] newGrah=this.ReShapeGraph(population[i],s,t);
+            ArrayList<Integer> rout_s_d = this.dijstra(s, demand[xi + 1]);
+            ArrayList<Integer> rout_d_t = this.dijstra(demand[xi + 1], t);
+            if (rout_d_t.size() == 0 || rout_s_d.size() == 0) {
                 continue;
+            }
             population[i].set(j, demand[xi + 1]);
 
-            rout_d_t.remove(0);
-            if (rout_d_t.size()>1)
-            rout_d_t.remove(rout_d_t.size()-1);
-            rout_s_d.remove(0);
-            if (rout_s_d.size()>1)
-            rout_s_d.remove(rout_s_d.size()-1);
-            population[i].addAll(j+1,rout_d_t);
-            population[i].addAll(j,rout_s_d);
 
-            population[i]=removeLoop(population[i]);
+            population[i].remove(j - 1);
+            population[i].remove(j - 1);
+            population[i].remove(j - 1);
+
+            population[i].addAll(j - 1, rout_d_t);
+            population[i].remove(j - 1);
+            population[i].addAll(j - 1, rout_s_d);
+
+            population[i] = removeLoop(population[i]);
 
         }
+        //第0个
+        for (int zi=0;zi<1;zi++)
+        {
+        i = 0;
+        if (Math.random() > this.mutationRate || population[i].size() < 3) {
+            continue;
+        }
+        int xi = (int) (Math.random() * (Dpointnum)); //随机找一个必经点
+        int suiji;
+        if (CalculFit(population[i]) < Dpointnum)//添加没有的点
+        {
+            for (suiji = 0; suiji < Dpointnum; suiji++) {
+                if (population[i].contains(this.demand[xi + 1])) {
+                    xi = (xi + 1) % Dpointnum;
+                }
+            }
+        }
+
+
+        //添加没有的点
+        int dtopi;
+        int dtopj;
+        int ptodi;
+        int ptodj;
+        // find t
+        int weightdtoj = 100;//初始权值设为100
+        for (dtopi = 0; dtopi < graphList[demand[xi + 1]].size(); dtopi++) {
+            for (dtopj = 0; dtopj < population[i].size(); dtopj++) {
+                if (graphList[demand[xi + 1]].get(dtopi)[0] == population[i].get(dtopj) & graphList[demand[xi + 1]].get(dtopi)[1] < weightdtoj) {
+                    j = dtopj;
+                    break;
+                }
+            }
+        }
+        if (j <= 0 || j >= population[i].size() - 1) {
+            j = (int) (Math.random() * (population[i].size() - 2)) + 1;
+        }
+        s = population[i].get(j - 1);
+        t = population[i].get(j + 1);
+        ArrayList<int[]>[] newGrah = this.ReShapeGraph(population[i], s, s);
+        ArrayList<Integer> rout_s_d = Tool.dijstra(newGrah, s, demand[xi + 1]);
+        ArrayList<Integer> p_rout_s_d = new ArrayList<Integer>();
+        p_rout_s_d.addAll(0, population[i]);
+        p_rout_s_d.addAll(0, rout_s_d);
+
+        newGrah = this.ReShapeGraph(population[i], s, s);
+        ArrayList<Integer> rout_d_t = Tool.dijstra(newGrah, demand[xi + 1], t);
+            if(rout_s_d.size()==0||rout_d_t.size()==0)
+                continue;
+
+        population[i].set(j, demand[xi + 1]);
+
+
+        population[i].remove(j - 1);
+        population[i].remove(j - 1);
+        population[i].remove(j - 1);
+
+        population[i].addAll(j - 1, rout_d_t);
+        population[i].remove(j - 1);
+        population[i].addAll(j - 1, rout_s_d);
+
+        population[i] = removeLoop(population[i]);
+            Random random=new Random();
+            population[random.nextInt(this.Popsize-1)+1]=population[i];
+            population[0]=Tool.ListClone(best, 0, best.size());
+
+        }
+
+
+
+        population[0]=best;
+
 
     }
 
@@ -424,5 +521,123 @@ public class GAAA {
         }
 
         return totalLength;
+    }
+
+    public  ArrayList<Integer> dijstra(int i, int j)//迪杰斯特拉斯算法，
+    {
+        //从图graphList中找到点i，到点j的最短路径，并返回该路径
+        //要求:i和j不能相同
+        if(this.dijstraRoute[i][j].size()!=0)return dijstraRoute[i][j];
+
+        ArrayList<Integer> [] ArrivePointInfo;
+        ArrivePointInfo=new ArrayList[3];           //   0:当前点，1:当前点的父代点的存储下标，2:当前点的最短路径长度
+        ArrivePointInfo[0]=new ArrayList<Integer>();//   用来存储搜寻路径信息
+        ArrivePointInfo[1]=new ArrayList<Integer>();
+        ArrivePointInfo[2]=new ArrayList<Integer>();
+        ArrayList<Integer> [] GrownPointInfo=new ArrayList[3];// 暂存拓展点的信息
+        GrownPointInfo[0]=new ArrayList<Integer>();           //0:当前点，1:当前点的父代点的存储下标，2:当前点的延拓路径长度
+        GrownPointInfo[1]=new ArrayList<Integer>();
+        GrownPointInfo[2]=new ArrayList<Integer>();
+
+
+        //初始化，即i点的加入
+        ArrivePointInfo[0].add(i);
+        ArrivePointInfo[1].add(0);
+        ArrivePointInfo[2].add(0);
+
+        int sign=1;//标示，1:有解，0:无解
+        int arraivepoint=i;//当前已达点
+        int kuochongi;
+        int kuochongi2;
+        while (arraivepoint!=j)
+        {
+            kuochongi=0;
+            while (kuochongi<ArrivePointInfo[0].size())
+            {
+                kuochongi2=0;
+                int growfpoint=ArrivePointInfo[0].get(kuochongi);
+                while (kuochongi2<graphList[growfpoint].size())
+                {
+                    int growspoint=graphList[growfpoint].get(kuochongi2)[0];
+                    int growweight=graphList[growfpoint].get(kuochongi2)[1]+ArrivePointInfo[2].get(kuochongi);
+                    if (!ArrivePointInfo[0].contains(growspoint))
+                    {
+                        GrownPointInfo[0].add(growspoint);
+                        GrownPointInfo[1].add(kuochongi);
+                        GrownPointInfo[2].add(growweight);
+                    }
+                    kuochongi2++;
+                }
+
+                kuochongi++;
+            }
+            if (GrownPointInfo[0].size()==0)//判断有无解
+            {
+                sign=0;
+                break;
+            }
+            int k=0;
+            int ss=GrownPointInfo[2].get(k);
+            for (int ii=1;ii<GrownPointInfo[0].size();ii++)
+            {
+                int mm=GrownPointInfo[2].get(ii);
+                if (mm<ss)
+                {
+                    k=ii;
+                    ss=mm;
+                }
+            }
+
+            //  int k=GrownPointInfo[2].indexOf(Collections.min(GrownPointInfo[2]));
+
+            //最小值标号
+            int newpoint=GrownPointInfo[0].get(k);
+            ArrivePointInfo[0].add(newpoint);
+            ArrivePointInfo[1].add(GrownPointInfo[1].get(k));
+            ArrivePointInfo[2].add(GrownPointInfo[2].get(k));
+            arraivepoint=newpoint;
+
+
+            GrownPointInfo[0].clear();
+            GrownPointInfo[1].clear();
+            GrownPointInfo[2].clear();
+
+        }
+
+
+        if (sign==0)
+        {
+            ArrayList<Integer>route=new ArrayList<Integer>();
+            return route;
+        }
+        else
+        {
+            ArrayList<Integer>route=new ArrayList<Integer>();
+            int m=ArrivePointInfo[0].size()-1;
+            while(m!=0)
+            {
+                route.add(0,ArrivePointInfo[0].get(m));
+                m=ArrivePointInfo[1].get(m);
+            }
+            route.add(0,i);
+            for (int sti=1; sti<ArrivePointInfo[0].size();sti++)//改
+            {
+                int j1=ArrivePointInfo[0].get(sti);//列标
+                if (dijstraRoute[i][j1].size()==0)
+                {
+                    m=sti;
+                    while (m!=0) {
+                        dijstraRoute[i][j1].add(0, ArrivePointInfo[0].get(m));
+                        m = ArrivePointInfo[1].get(m);
+                    }
+                    dijstraRoute[i][j1].add(0, i);
+
+                }
+
+            }                                                        //改
+
+
+            return route;
+        }
     }
 }

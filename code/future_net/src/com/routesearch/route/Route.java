@@ -16,6 +16,7 @@ import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import javax.swing.text.AbstractDocument;
 import java.util.ArrayList;
+import java.util.Date;
 
 public final class Route
 {
@@ -30,35 +31,61 @@ public final class Route
     public static ArrayList<int[]>[] graphList;
     private static int pointNum;
     private static int edgeNum;
-    public static String searchRoute(String graphContent, String condition) {
+    private static int [][]contenInt;
+    public static String searchRoute(String graphContent, String condition,long startTime) {
 
         ArrayList<int []>[]graph=ContentTrans(graphContent);
         int []demand=DemandTrans(condition);
+        if(demand.length==2){
+            ArrayList<Integer>bestRoute=noDmand(graph,demand);
+            if(bestRoute.size()==0) {
+                return "NA";
+            }
+            ArrayList<Integer> edge = PointTransEdge(bestRoute);
+            String str = "";
+            for (int i = 0; i < edge.size(); i++) {
+                str += edge.get(i).toString();
+                if (i != edge.size() - 1) str += "|";
+            }
+            return (str);
+        }
         GA=new GAAA(graphList,demand);
-        int maxIter=100;
+        GA.setMsg(pointNum,edgeNum);
+        int coe=0;
+        if(pointNum<50){
+            coe=1;
+        }else if(pointNum<100){
+            coe=2;
+        }else if(pointNum<300){
+            coe=4;
+        }else {
+            coe=5;
+        }
+
+        int maxIter=100*coe;
         GA.InitPop();
-
-       // GA.Mutation();
-
         for(int i=0;i<maxIter;i++){
             GA.Breed();
-            System.out.println( "  iter:"+i);
+//           System.out.println( "  iter:"+i);
            GA.Mutation();
+            if(pointNum>200){
+                if(System.currentTimeMillis()-startTime>9600)break;
+            }
         }
         GA.CalculFit();
         ArrayList<Integer>bestRoute=GA.getBestRoute();
-        System.out.println(Tool.Connected(graphList,bestRoute)+" 符合规范");
+//        System.out.println(Tool.Connected(graphList,bestRoute)+" 符合规范");
         boolean flage= GA.JugeDemand();
         if(flage==false){
             return "NA";
-        }
-        else {
+        } else {
+            ArrayList<Integer> edge = PointTransEdge(bestRoute);
             String str = "";
-            for (int i = 0; i < bestRoute.size(); i++) {
-                str += bestRoute.get(i).toString();
-                if (i != bestRoute.size() - 1) str += ",";
+            for (int i = 0; i < edge.size(); i++) {
+                str += edge.get(i).toString();
+                if (i != edge.size() - 1) str += "|";
             }
-            System.out.print("weight:"+ GA.CalculWeight(bestRoute)+" ");
+//            System.out.print("weight:"+ GA.CalculWeight(bestRoute)+" ");
 
             return (str);
         }
@@ -71,13 +98,19 @@ public final class Route
 //        return (str);
     }
 
+    private static ArrayList<Integer> noDmand(ArrayList<int []>[]graph,int []demand){
+//        demand 中只有起点和终点没有中间点
+        ArrayList<Integer> route=Tool.dijstra(graph,demand[0],demand[1]);
+        return route;
+
+    }
 
     public static ArrayList<int []>[] ContentTrans(String conditionContent){
 //        数据转换功能
         String []edge=conditionContent.split("\n");
         edgeNum=edge.length;
         String [][]contentStr=new String[edge.length][4];
-        int [][]contenInt=new int[edge.length][3];
+        contenInt=new int[edge.length][3];
         int maxPoint=0;
         for(int i=0;i<edge.length;i++) {
             contentStr[i]=edge[i].split(",");
@@ -90,18 +123,16 @@ public final class Route
         maxPoint+=1;
         pointNum=maxPoint;
         ArrayList<int []>[] contentArr=new ArrayList[maxPoint];
+        for(int i=0;i<maxPoint;i++){
+            contentArr[i]=new ArrayList<int[]>();
+        }
 //      这个 arrlist 中存的是int[2]类型的数组 i
         for(int i=0;i<contenInt.length;i++) {
             //            遍历contenInt
 //            contenInt[i][0]为起点 contenInt[i][1]为终点
             int []first={contenInt[i][1],contenInt[i][2]};
-            if(contentArr[contenInt[i][0]]!=null){
-                contentArr[contenInt[i][0]].add(first);
-            }
-            else{
-                contentArr[contenInt[i][0]]=new ArrayList<int[]>();
-                contentArr[contenInt[i][0]].add(first);
-            }
+            contentArr[contenInt[i][0]].add(first);
+
         }
         graphList=contentArr;
 
@@ -113,19 +144,41 @@ public final class Route
 //数据转换功能
         condition=condition.split("\n")[0];//去除最后的换行符号
         String []strings=condition.split(",");
-        String []midPoint=strings[2].split("\\|");
-        int length=midPoint.length+2;
-        int [] demand=new int[length];
-        demand[0]=Integer.parseInt(strings[0]);
-        for(int i=0;i<midPoint.length;i++){
-            demand[i+1]=Integer.parseInt(midPoint[i]);
-        }
-        demand[length-1]=Integer.parseInt(strings[1]);
 
-        return demand;
+        if(strings.length>2) {
+            String[]  midPoint= strings[2].split("\\|");
+            int length=midPoint.length+2;
+            int [] demand=new int[length];
+            demand[0]=Integer.parseInt(strings[0]);
+            for(int i=0;i<midPoint.length;i++){
+                demand[i+1]=Integer.parseInt(midPoint[i]);
+            }
+            demand[length-1]=Integer.parseInt(strings[1]);
+
+            return demand;
+        }else {
+            int [] demand ={Integer.parseInt(strings[0]),Integer.parseInt(strings[1])};
+            return demand;
+        }
+
 
     }
 
+    private static ArrayList<Integer> PointTransEdge(ArrayList<Integer>route){
+//        结果中的点转换成边
+        ArrayList<Integer>edge=new ArrayList<Integer>(route.size()-1);
+        for(int i=0;i<route.size()-1;i++){
+            int point=route.get(i);
+            int nextPoint=route.get(i+1);
+            for(int j=0;j<edgeNum;j++){
+                if(contenInt[j][0]==point&&contenInt[j][1]==nextPoint){
+                    edge.add(j);
+                    break;
+                }
+            }
+        }
+        return edge;
+    }
 
 
 }
