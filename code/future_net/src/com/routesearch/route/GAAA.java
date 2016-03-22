@@ -2,6 +2,7 @@ package com.routesearch.route;
 
 import java.util.*;
 import com.filetool.util.LogUtil;
+import com.sun.javafx.image.BytePixelSetter;
 import com.sun.org.apache.xpath.internal.FoundIndex;
 
 /**
@@ -12,7 +13,7 @@ public class GAAA {
     private int totalWeight;
     //    权重
     private int Popsize = 200; //种群规模
-    private double crossRate = 0.9;//交叉概率
+    private double crossRate =1;//交叉概率
     private double mutationRate = 0.5;//变异概率
     private ArrayList bestRoute;//当前最短路径 route[0]存放begin route[end]存放end point  route[1-end]存中间节点
     private int[] demand;//要求哦 route[0]存放begin route[end]存放end point  route[1-end]存中间节点
@@ -25,6 +26,8 @@ public class GAAA {
     private int edgeNum;
 //    图中边的个数
     ArrayList<Integer>[][]dijstraRoute;
+    int [][]dijstraRouteBo;
+
     public GAAA(ArrayList<int[]>[] graphList, int[] demand) {
 //        构造函数传入graph
         this.demand = demand;
@@ -42,6 +45,7 @@ public class GAAA {
         }
         this.pointNum=pointNum;
         this.edgeNum=edgeNum;
+        this.dijstraRouteBo=new int[pointNum][pointNum];
         this.dijstraRoute=new ArrayList[pointNum][pointNum];
         for(int i=0;i<pointNum;i++){
             for(int j=0;j<pointNum;j++){
@@ -358,7 +362,85 @@ public class GAAA {
 
         for (i = 1; i < Popsize; i += 1) //对每一个个体进行变异操作
         {
-            if (Math.random() > this.mutationRate || population[i].size() < 3) {
+            if (Math.random() > this.mutationRate ) {
+                continue;
+            }
+
+            int xi = (int) (Math.random() * (Dpointnum)); //随机找一个必经点
+            int suiji;
+            if (CalculFit(population[i]) < Dpointnum)//添加没有的点
+            {
+                for (suiji = 0; suiji < Dpointnum; suiji++) {
+                    if (population[i].contains(this.demand[xi + 1])) {
+                        xi = (xi + 1) % Dpointnum;
+                    }
+                }
+            }
+
+            if (population[i].size() < 3)
+            {
+                s=population[i].get(0);
+                t=population[i].get(1);
+                ArrayList<Integer> rout_s_d = this.dijstra(s, demand[xi + 1]);
+                ArrayList<Integer> rout_d_t = this.dijstra(demand[xi + 1], t);
+                if (rout_d_t.size() == 0 || rout_s_d.size() == 0) {
+                    continue;
+                }
+
+                population[i].remove(1);
+                population[i].remove(0);
+                population[i].addAll(0, rout_d_t);
+                population[i].remove(0);
+                population[i].addAll(0, rout_s_d);
+                population[i] = removeLoop(population[i]);
+            }
+            else
+            {//添加没有的点
+                int dtopi;
+                int dtopj;
+                int ptodi;
+                int ptodj;
+                // find t
+                int weightdtoj = 100;//初始权值设为100
+                for (dtopi = 0; dtopi < graphList[demand[xi + 1]].size(); dtopi++) {
+                    for (dtopj = 0; dtopj < population[i].size(); dtopj++) {
+                        if (graphList[demand[xi + 1]].get(dtopi)[0] == population[i].get(dtopj) & graphList[demand[xi + 1]].get(dtopi)[1] < weightdtoj) {
+                            j = dtopj;
+                            break;
+                        }
+                    }
+                }
+                if (j <= 0 || j >= population[i].size() - 1) {
+                    j = (int) (Math.random() * (population[i].size() - 2)) + 1;
+                }
+                s = population[i].get(j - 1);
+                t = population[i].get(j + 1);
+                ArrayList<Integer> rout_s_d = this.dijstra(s, demand[xi + 1]);
+                ArrayList<Integer> rout_d_t = this.dijstra(demand[xi + 1], t);
+                if (rout_d_t.size() == 0 || rout_s_d.size() == 0) {
+                    continue;
+                }
+                population[i].set(j, demand[xi + 1]);
+
+                population[i].remove(j - 1);
+                population[i].remove(j - 1);
+                population[i].remove(j - 1);
+                population[i].addAll(j - 1, rout_d_t);
+                population[i].remove(j - 1);
+                population[i].addAll(j - 1, rout_s_d);
+
+                population[i] = removeLoop(population[i]);
+            }
+
+//            ArrayList<int[]>[] newGrah=this.ReShapeGraph(population[i],s,t);
+
+
+        }
+        //第0个
+        for (int zi=0;zi<1;zi++) {
+
+            i = 0;
+            if (Math.random() > this.mutationRate) {
                 continue;
             }
             int xi = (int) (Math.random() * (Dpointnum)); //随机找一个必经点
@@ -372,120 +454,61 @@ public class GAAA {
                 }
             }
 
+            if (population[i].size() < 3) {
+                s = population[i].get(0);
+                t = population[i].get(1);
+                ArrayList<Integer> rout_s_d = this.dijstra(s, demand[xi + 1]);
+                ArrayList<Integer> rout_d_t = this.dijstra(demand[xi + 1], t);
+                if (rout_d_t.size() == 0 || rout_s_d.size() == 0) {
+                    continue;
+                }
 
-            //添加没有的点
-            int dtopi;
-            int dtopj;
-            int ptodi;
-            int ptodj;
-            // find t
-            int weightdtoj = 100;//初始权值设为100
-            for (dtopi = 0; dtopi < graphList[demand[xi + 1]].size(); dtopi++) {
-                for (dtopj = 0; dtopj < population[i].size(); dtopj++) {
-                    if (graphList[demand[xi + 1]].get(dtopi)[0] == population[i].get(dtopj) & graphList[demand[xi + 1]].get(dtopi)[1] < weightdtoj) {
-                        j = dtopj;
-                        break;
+                population[i].remove(1);
+                population[i].remove(0);
+                population[i].addAll(0, rout_d_t);
+                population[i].remove(0);
+                population[i].addAll(0, rout_s_d);
+                population[i] = removeLoop(population[i]);
+            } else {//添加没有的点
+                int dtopi;
+                int dtopj;
+                int ptodi;
+                int ptodj;
+                // find t
+                int weightdtoj = 100;//初始权值设为100
+                for (dtopi = 0; dtopi < graphList[demand[xi + 1]].size(); dtopi++) {
+                    for (dtopj = 0; dtopj < population[i].size(); dtopj++) {
+                        if (graphList[demand[xi + 1]].get(dtopi)[0] == population[i].get(dtopj) & graphList[demand[xi + 1]].get(dtopi)[1] < weightdtoj) {
+                            j = dtopj;
+                            break;
+                        }
                     }
                 }
-            }
-            if (j <= 0 || j >= population[i].size() - 1) {
-                j = (int) (Math.random() * (population[i].size() - 2)) + 1;
-            }
-            s = population[i].get(j - 1);
-            t = population[i].get(j + 1);
-//            ArrayList<int[]>[] newGrah=this.ReShapeGraph(population[i],s,t);
-            ArrayList<Integer> rout_s_d = this.dijstra(s, demand[xi + 1]);
-            ArrayList<Integer> rout_d_t = this.dijstra(demand[xi + 1], t);
-            if (rout_d_t.size() == 0 || rout_s_d.size() == 0) {
-                continue;
-            }
-            population[i].set(j, demand[xi + 1]);
-
-
-            population[i].remove(j - 1);
-            population[i].remove(j - 1);
-            population[i].remove(j - 1);
-
-            population[i].addAll(j - 1, rout_d_t);
-            population[i].remove(j - 1);
-            population[i].addAll(j - 1, rout_s_d);
-
-            population[i] = removeLoop(population[i]);
-
-        }
-        //第0个
-        for (int zi=0;zi<1;zi++)
-        {
-        i = 0;
-        if (Math.random() > this.mutationRate || population[i].size() < 3) {
-            continue;
-        }
-        int xi = (int) (Math.random() * (Dpointnum)); //随机找一个必经点
-        int suiji;
-        if (CalculFit(population[i]) < Dpointnum)//添加没有的点
-        {
-            for (suiji = 0; suiji < Dpointnum; suiji++) {
-                if (population[i].contains(this.demand[xi + 1])) {
-                    xi = (xi + 1) % Dpointnum;
+                if (j <= 0 || j >= population[i].size() - 1) {
+                    j = (int) (Math.random() * (population[i].size() - 2)) + 1;
                 }
-            }
-        }
-
-
-        //添加没有的点
-        int dtopi;
-        int dtopj;
-        int ptodi;
-        int ptodj;
-        // find t
-        int weightdtoj = 100;//初始权值设为100
-        for (dtopi = 0; dtopi < graphList[demand[xi + 1]].size(); dtopi++) {
-            for (dtopj = 0; dtopj < population[i].size(); dtopj++) {
-                if (graphList[demand[xi + 1]].get(dtopi)[0] == population[i].get(dtopj) & graphList[demand[xi + 1]].get(dtopi)[1] < weightdtoj) {
-                    j = dtopj;
-                    break;
+                s = population[i].get(j - 1);
+                t = population[i].get(j + 1);
+                ArrayList<Integer> rout_s_d = this.dijstra(s, demand[xi + 1]);
+                ArrayList<Integer> rout_d_t = this.dijstra(demand[xi + 1], t);
+                if (rout_d_t.size() == 0 || rout_s_d.size() == 0) {
+                    continue;
                 }
+                population[i].set(j, demand[xi + 1]);
+
+                population[i].remove(j - 1);
+                population[i].remove(j - 1);
+                population[i].remove(j - 1);
+                population[i].addAll(j - 1, rout_d_t);
+                population[i].remove(j - 1);
+                population[i].addAll(j - 1, rout_s_d);
+
+                population[i] = removeLoop(population[i]);
             }
-        }
-        if (j <= 0 || j >= population[i].size() - 1) {
-            j = (int) (Math.random() * (population[i].size() - 2)) + 1;
-        }
-        s = population[i].get(j - 1);
-        t = population[i].get(j + 1);
-        ArrayList<int[]>[] newGrah = this.ReShapeGraph(population[i], s, s);
-        ArrayList<Integer> rout_s_d = Tool.dijstra(newGrah, s, demand[xi + 1]);
-        ArrayList<Integer> p_rout_s_d = new ArrayList<Integer>();
-        p_rout_s_d.addAll(0, population[i]);
-        p_rout_s_d.addAll(0, rout_s_d);
-
-        newGrah = this.ReShapeGraph(population[i], s, s);
-        ArrayList<Integer> rout_d_t = Tool.dijstra(newGrah, demand[xi + 1], t);
-            if(rout_s_d.size()==0||rout_d_t.size()==0)
-                continue;
-
-        population[i].set(j, demand[xi + 1]);
-
-
-        population[i].remove(j - 1);
-        population[i].remove(j - 1);
-        population[i].remove(j - 1);
-
-        population[i].addAll(j - 1, rout_d_t);
-        population[i].remove(j - 1);
-        population[i].addAll(j - 1, rout_s_d);
-
-        population[i] = removeLoop(population[i]);
             Random random=new Random();
             population[random.nextInt(this.Popsize-1)+1]=population[i];
             population[0]=Tool.ListClone(best, 0, best.size());
-
         }
-
-
-
-        population[0]=best;
-
-
     }
 
     private ArrayList<int[]>[] ReShapeGraph(ArrayList<Integer> route, int fPoint, int bPoint) {
@@ -528,6 +551,11 @@ public class GAAA {
         //从图graphList中找到点i，到点j的最短路径，并返回该路径
         //要求:i和j不能相同
         if(this.dijstraRoute[i][j].size()!=0)return dijstraRoute[i][j];
+        if(this.dijstraRouteBo[i][j]==1)
+        {
+            ArrayList<Integer>route=new ArrayList<Integer>();
+            return route;
+        }
 
         ArrayList<Integer> [] ArrivePointInfo;
         ArrivePointInfo=new ArrayList[3];           //   0:当前点，1:当前点的父代点的存储下标，2:当前点的最短路径长度
@@ -608,6 +636,7 @@ public class GAAA {
         if (sign==0)
         {
             ArrayList<Integer>route=new ArrayList<Integer>();
+            this.dijstraRouteBo[i][j]=1;//   更新通路判断矩阵
             return route;
         }
         else
