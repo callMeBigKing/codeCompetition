@@ -23,24 +23,27 @@ public class Main {
             System.err.println("please input args: graphFilePath, conditionFilePath, resultFilePath");
             return;
         }
-        long startTime = System.currentTimeMillis();
+//        long startTime = System.currentTimeMillis();
         String graphFilePath = args[0];
         String conditionFilePath = args[1];
         String resultFilePath = args[2];
 
-//       long startTime= System.currentTimeMillis();
+       long startTime= System.currentTimeMillis();
         LogUtil.printLog("Begin");
 
         // 读取输入文件
         String graphContent = FileUtil.read(graphFilePath, null);
         String conditionContent = FileUtil.read(conditionFilePath, null);
 //         功能实现入口
-
-        String resultStr = Route.searchRoute(graphContent, conditionContent, startTime);
-
+//        for(int i=0;i<20;i++) {
+//            long startTime= System.currentTimeMillis();
+            String resultStr = Route.searchRoute(graphContent, conditionContent, startTime);
+            System.out.println(resultStr);
+//        }
         // 写入输出文件
-        System.out.println(resultStr);
+
         FileUtil.write(resultFilePath, resultStr, false);
+
 
         LogUtil.printLog("End");
 

@@ -17,6 +17,7 @@ import com.sun.org.apache.bcel.internal.generic.NEW;
 import javax.swing.text.AbstractDocument;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Stack;
 
 public final class Route
 {
@@ -51,25 +52,28 @@ public final class Route
         }
         GA=new GAAA(graphList,demand);
         GA.setMsg(pointNum,edgeNum);
-        int coe=0;
-        if(pointNum<50){
+        double coe=0;
+        if(pointNum<=20){
+            coe=0.3;
+        }else if(pointNum<50){
             coe=1;
         }else if(pointNum<100){
             coe=2;
-        }else if(pointNum<300){
+        }
+        else if(pointNum<=300){
             coe=4;
         }else {
             coe=5;
         }
 
-        int maxIter=100*coe;
+        int maxIter=(int)(100*coe);
         GA.InitPop();
         for(int i=0;i<maxIter;i++){
             GA.Breed();
 //           System.out.println( "  iter:"+i);
            GA.Mutation();
             if(pointNum>200){
-                if(System.currentTimeMillis()-startTime>9600)break;
+                if(System.currentTimeMillis()-startTime>9300)break;
             }
         }
         GA.CalculFit();
@@ -85,7 +89,7 @@ public final class Route
                 str += edge.get(i).toString();
                 if (i != edge.size() - 1) str += "|";
             }
-//            System.out.print("weight:"+ GA.CalculWeight(bestRoute)+" ");
+            System.out.print("weight:"+ GA.CalculWeight(bestRoute)+" ");
 
             return (str);
         }
@@ -180,5 +184,39 @@ public final class Route
         return edge;
     }
 
+    private static void BianLi(int start,int end){
+        ArrayList<Integer>[] routes=new ArrayList[500];
+        Stack<Integer>stack=new Stack<Integer>();
+        stack.add(start);
+        ArrayList<Integer>[] already=new ArrayList[pointNum];
+        for (int i=0;i<already.length;i++){
+            already[i]=new ArrayList<Integer>();
+        }
+        int thisPoint=stack.peek();
+        int prePoint=stack.peek();
+        while (graphList[start].size()>already[start].size()){
+            while (graphList[thisPoint].size()>already[thisPoint].size()) {
+
+                int tempPoint=graphList[thisPoint].get(already[thisPoint].size())[0];
+//                尝试性走一步如果形成了环则不干了
+                if(tempPoint==end){
+                    already[thisPoint].add(1);
+                    break;
+                }
+                if(stack.contains(tempPoint)){
+                    already[thisPoint].add(1);
+                }else {
+                    prePoint = thisPoint;
+                    thisPoint=tempPoint;
+                    already[prePoint].add(1);
+                    stack.push(thisPoint);
+
+                }
+
+            }
+
+        }
+
+    }
 
 }
