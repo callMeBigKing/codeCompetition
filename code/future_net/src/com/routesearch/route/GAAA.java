@@ -3,6 +3,7 @@ package com.routesearch.route;
 import java.util.*;
 import com.filetool.util.LogUtil;
 import com.sun.javafx.image.BytePixelSetter;
+import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import com.sun.org.apache.xpath.internal.FoundIndex;
 
 /**
@@ -44,21 +45,22 @@ public class GAAA {
             this.Popsize=10;
         }
         else if(pointNum<=20){
-            this.Popsize=40;
+            this.Popsize=100;
+        }
+        else if(pointNum<30){
+            this.Popsize=150;
         }
         else if(pointNum<40){
-            this.Popsize=130;
-        }
-        else if(pointNum<50){
-            this.Popsize=180;
-        }
-        else if(pointNum<100){
             this.Popsize=200;
         }
-        else if(pointNum*2<700){
-           this.Popsize=pointNum*2;
-        }else{
-            this.Popsize=700;
+        else if(pointNum<50){
+            this.Popsize =220;
+        }
+        else if(pointNum<100){
+            this.Popsize=350;
+        }
+        else {
+            this.Popsize=500;
         }
         this.pointNum=pointNum;
         this.edgeNum=edgeNum;
@@ -107,11 +109,16 @@ public class GAAA {
 //        初始化种群，随机产生一群从起点到终点的路径
         population = new ArrayList[this.Popsize];
         for (int i = 0; i < this.Popsize; i++) {
-
-            population[i] = this.CreateOneRoute();
-
+//            if(this.pointNum<150||this.edgeNum<500){
+//                population[i] = this.CreateOneRoute();
+//            }else {
+//                 population[i] = this.CreateOneRoute2();
+//            }
+            population[i] = this.CreateOneRoute2();
         }
     }
+
+
 
     public void InitPop2() {
 //        初始化种群，随机产生一群从起点到终点的路径
@@ -141,7 +148,9 @@ public class GAAA {
             int pointer = startPoint;//当前所在节点
             while (pointer != endPoint) {
                 int connectNum = graphListClon[pointer].size();
-                if (connectNum == 0) break;//路走不通了就break
+                if (connectNum == 0) {
+                    break;//路走不通了就break
+                }
 //            当前节点所连通边数
                 Random random = new Random();
                 int nextPointIndex = random.nextInt(connectNum);//注意这里的nextPointIndex只是索引不是具体的点
@@ -163,8 +172,173 @@ public class GAAA {
         return route;
     }
 
-    public ArrayList<Integer> CreateOneRoute(int startPoint,int endPoint ) {
-        //生成一条从起点到终点的路径dd
+    public ArrayList<Integer> CreateOneRoute2(){
+//
+        int endPoint=this.demand[demand.length-1];
+        ArrayList<Integer> route = new ArrayList<Integer>();
+        while (true) {
+            Random random = new Random();
+            int demandNum = random.nextInt(this.demandSet.size() ) + 1;
+//       经过   随机 1-demandSet.size() 个中间点
+
+            ArrayList<Integer> demandList = new ArrayList<Integer>();
+//        随机生成中间点的排序
+            ArrayList<Integer> demandClon = new ArrayList();
+            Iterator<Integer> iterator = this.demandSet.iterator();
+            while (iterator.hasNext()) {
+                demandClon.add(iterator.next());
+            }
+
+//        随机生成中间点的顺序
+            while (demandList.size() < demandNum) {
+                int index = random.nextInt(demandClon.size());
+                int point = demandClon.get(index);
+                demandList.add(point);
+                demandClon.remove(index);
+            }
+
+
+            for (int i = 0; i <= demandList.size(); i++) {
+                if (i == 0) {
+                    if (demandList.size() == 0) {
+//                    如果没有中间点了
+                        route = this.dijstra(demand[0], demand[demand.length - 1]);
+                        break;
+                    }
+                    ArrayList<Integer> subRoute = this.dijstra(demand[0], demandList.get(i));
+                    if (subRoute.size() == 0) {
+//                    不联通，放弃该点，后移动一位
+                        demandList.remove(0);
+                        i--;
+                        continue;
+                    }
+                    route.addAll(subRoute);
+                } else if (i == demandList.size()) {
+                    ArrayList<Integer> subRoute = this.dijstra(demandList.get(i - 1), demand[demand.length - 1]);
+                    if (subRoute.size() == 0) {
+//                    不联通，当前点无法到达目标点，跳出来，重新随机中间点序列
+                        break;
+                    }
+                    route.addAll(subRoute);
+                } else {
+                    ArrayList<Integer> subRoute = this.dijstra(demandList.get(i - 1), demandList.get(i));
+                    if (subRoute.size() == 0) {
+//                    不联通，放弃该点，后移动一位
+                        demandList.remove(i);
+                        i--;
+                        continue;
+                    }
+                    route.addAll(subRoute);
+                }
+            }
+
+            route=this.removeLoop(route);
+            if(route.get(route.size()-1)==endPoint){
+                break;
+            }else {
+                route.clear();
+            }
+        }
+
+        return this.removeLoop(route);
+
+    }
+
+
+
+    public ArrayList<Integer> CreateOneRoute3(){
+//
+        int endPoint=this.demand[demand.length-1];
+        ArrayList<Integer> route = new ArrayList<Integer>();
+        while(true) {
+            Random random = new Random();
+            int demandNum = this.demandSet.size();
+//       经过   随机 1-demandSet.size() 个中间点
+            ArrayList<Integer> demandClon = new ArrayList();
+            Iterator<Integer> iterator = this.demandSet.iterator();
+            while (iterator.hasNext()) {
+                demandClon.add(iterator.next());
+            }
+
+
+            ArrayList<Integer> demandList = new ArrayList<Integer>();
+//        随机生成中间点的顺序
+            while (demandList.size() < demandNum) {
+                int index = random.nextInt(demandClon.size());
+                int point = demandClon.get(index);
+                demandList.add(point);
+                demandClon.remove(index);
+
+            }
+
+
+            for (int i = 0; i <= demandList.size(); i++) {
+                if (i == 0) {
+                    if (demandList.size() == 0) {
+//                    如果没有中间点了
+
+                        route = this.dijstra(demand[0], demand[demand.length - 1]);
+                        break;
+                    }
+                    ArrayList<int[]>[] newGraph = this.ReShapeGraph(route);
+                    ArrayList<Integer> subRoute = Tool.dijstra(newGraph, demand[0], demandList.get(i));
+                    if (subRoute.size() == 0) {
+//                    不联通，放弃该点，后移动一位
+                        demandList.remove(0);
+                        i--;
+                        continue;
+                    }
+                    route.addAll(subRoute);
+                } else if (i == demandList.size()) {
+                    ArrayList<int[]>[] newGraph = this.ReShapeGraph(route);
+                    ArrayList<Integer> subRoute = Tool.dijstra(newGraph, demandList.get(i - 1), demand[demand.length - 1]);
+                    if (subRoute.size() == 0) {
+//                    不联通，当前点无法到达目标点，跳出来，重新随机中间点序列
+                        break;
+                    }
+                    route.addAll(subRoute);
+                } else {
+                    ArrayList<int[]>[] newGraph = this.ReShapeGraph(route);
+                    ArrayList<Integer> subRoute = Tool.dijstra(newGraph, demandList.get(i - 1), demandList.get(i));
+                    if (subRoute.size() == 0) {
+//                    不联通，放弃该点，后移动一位
+                        demandList.remove(i);
+                        i--;
+                        continue;
+                    }
+                    route.addAll(subRoute);
+                }
+            }
+            route=this.removeLoop(route);
+            if(route.get(route.size()-1)==endPoint){
+                break;
+            }else {
+                route.clear();
+            }
+        }
+        return this.removeLoop(route);
+
+    }
+
+    public ArrayList<Integer> CreateOneRoute4(){
+//   随机选一个点，用djistra 连接起点终点
+
+        int endPoint=this.demand[demand.length-1];
+        int startPoint=this.demand[0];
+        Random random = new Random();
+
+
+        int choosePoint=random.nextInt(this.pointNum);
+
+        ArrayList<Integer> route=this.dijstra(startPoint,choosePoint);
+        ArrayList<Integer> subRoute=this.dijstra(choosePoint,endPoint);
+        route.addAll(subRoute);
+        return this.removeLoop(route);
+
+    }
+
+    public ArrayList<Integer> CreateOneRoute(int startPoint,int endPoint) {
+        //生成一条从startPoint到endPoint的路径
         ArrayList<Integer> route = new ArrayList<Integer>();
         int maxFind=20;
         while (maxFind>0) {
@@ -197,6 +371,55 @@ public class GAAA {
             maxFind--;
         }
         return route;
+    }
+
+    public ArrayList<Integer> dijstra(int startPoint,int endPoint) {
+        //生成一条从startPoint到endPoint的路径
+         int maxpoint=1000;//最多找maxpoint*出度个点
+        ArrayList<Integer> []route=new ArrayList[2] ;
+        route[0]= new ArrayList<Integer>();
+        route[1]= new ArrayList<Integer>();
+        route[0].add(startPoint);
+        route[1].add(0);
+        int fa=0;
+        int sign=-1;//符号
+        while (true)
+        {
+            int fapoint=route[0].get(fa);
+            for (int j=0;j<graphList[fapoint].size();j++)
+            {
+                route[0].add(graphList[fapoint].get(j)[0]);
+                route[1].add(fa);
+                if (route[0].get(route[0].size()-1)==endPoint)
+                {
+                    sign=1;
+                    break;
+                }
+
+
+            }
+            if (sign==1||fa>maxpoint)
+                break;
+            fa++;
+
+        }
+
+        ArrayList<Integer> connect=new ArrayList<Integer>() ;
+        if (sign<0)
+            return connect;
+        else
+        {
+            int m=route[0].size()-1;
+            while(m!=0)
+            {
+                connect.add(0,route[0].get(m));
+                m=route[1].get(m);
+            }
+            connect.add(0,startPoint);
+            return connect;
+        }
+
+
     }
 
     public boolean JugeConnect() {
@@ -870,6 +1093,22 @@ public class GAAA {
         return newGraph;
     }
 
+    private ArrayList<int[]>[] ReShapeGraph(ArrayList<Integer> route) {
+//        在图中去除经过route 中点的变
+        int pointNum = this.graphList.length;
+        ArrayList<int[]>[] newGraph = new ArrayList[pointNum];
+        for (int i = 0; i < pointNum; i++) {
+            newGraph[i] = new ArrayList<int[]>();
+            if (!route.contains(i) ) {
+                int iLength = this.graphList[i].size();
+                for (int j = 0; j < iLength; j++) {
+                    newGraph[i].add(this.graphList[i].get(j).clone());
+                }
+            }
+        }
+        return newGraph;
+    }
+
 
     public int CalculWeight(ArrayList route) {
 //        计算权重  fit=1/totalLength+N N 表示经过的中间点个数
@@ -889,7 +1128,7 @@ public class GAAA {
         return totalLength;
     }
 
-    public  ArrayList<Integer> dijstra(int i, int j)//迪杰斯特拉斯算法，
+    public  ArrayList<Integer> dijstra1(int i, int j)//迪杰斯特拉斯算法，
     {
         //从图graphList中找到点i，到点j的最短路径，并返回该路径
         //要求:i和j不能相同
@@ -1012,4 +1251,102 @@ public class GAAA {
             return route;
         }
     }
+
+    public void InitDijstra()
+    {
+
+        for(int i=0;i<pointNum;i++)
+        {
+        ArrayList<Integer> [] ArrivePointInfo;
+        ArrivePointInfo=new ArrayList[3];           //   0:当前点，1:当前点的父代点的存储下标，2:当前点的最短路径长度
+        ArrivePointInfo[0]=new ArrayList<Integer>();//   用来存储搜寻路径信息
+        ArrivePointInfo[1]=new ArrayList<Integer>();
+        ArrivePointInfo[2]=new ArrayList<Integer>();
+        ArrayList<Integer> [] GrownPointInfo=new ArrayList[3];// 暂存拓展点的信息
+        GrownPointInfo[0]=new ArrayList<Integer>();           //0:当前点，1:当前点的父代点的存储下标，2:当前点的延拓路径长度
+        GrownPointInfo[1]=new ArrayList<Integer>();
+        GrownPointInfo[2]=new ArrayList<Integer>();
+
+
+        //初始化，即i点的加入
+        ArrivePointInfo[0].add(i);
+        ArrivePointInfo[1].add(0);
+        ArrivePointInfo[2].add(0);
+
+        int sign=1;//标示，1:有解，0:无解
+        int arraivepoint=1;//当前已达一个点
+        int kuochongi;
+        int kuochongi2;
+        while (arraivepoint<this.pointNum)
+        {
+            kuochongi=0;
+            while (kuochongi<ArrivePointInfo[0].size())
+            {
+                kuochongi2=0;
+                int growfpoint=ArrivePointInfo[0].get(kuochongi);
+                while (kuochongi2<graphList[growfpoint].size())
+                {
+                    int growspoint=graphList[growfpoint].get(kuochongi2)[0];
+                    int growweight=graphList[growfpoint].get(kuochongi2)[1]+ArrivePointInfo[2].get(kuochongi);
+                    if (!ArrivePointInfo[0].contains(growspoint))
+                    {
+                        GrownPointInfo[0].add(growspoint);
+                        GrownPointInfo[1].add(kuochongi);
+                        GrownPointInfo[2].add(growweight);
+                    }
+                    kuochongi2++;
+                }
+
+                kuochongi++;
+            }
+            if (GrownPointInfo[0].size()==0)//判断有无解
+            {
+                sign=0;
+                break;
+            }
+            int k=0;
+            int ss=GrownPointInfo[2].get(k);
+            for (int ii=1;ii<GrownPointInfo[0].size();ii++)
+            {
+                int mm=GrownPointInfo[2].get(ii);
+                if (mm<ss)
+                {
+                    k=ii;
+                    ss=mm;
+                }
+            }
+
+            //  int k=GrownPointInfo[2].indexOf(Collections.min(GrownPointInfo[2]));
+
+            //最小值标号
+            int newpoint=GrownPointInfo[0].get(k);
+            ArrivePointInfo[0].add(newpoint);
+            ArrivePointInfo[1].add(GrownPointInfo[1].get(k));
+            ArrivePointInfo[2].add(GrownPointInfo[2].get(k));
+            arraivepoint=newpoint;
+
+
+            GrownPointInfo[0].clear();
+            GrownPointInfo[1].clear();
+            GrownPointInfo[2].clear();
+
+        }
+
+            int m=0;
+            for (int sti=1; sti<ArrivePointInfo[0].size();sti++)//改
+            {
+                int j1=ArrivePointInfo[0].get(sti);//列标
+                if (dijstraRoute[i][j1].size()==0)
+                {
+                    m=sti;
+                    while (m!=0) {
+                        dijstraRoute[i][j1].add(0, ArrivePointInfo[0].get(m));
+                        m = ArrivePointInfo[1].get(m);
+                    }
+                }
+
+            }                                                        //改
+    }
+    }
+
 }

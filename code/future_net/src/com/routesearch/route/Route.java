@@ -54,11 +54,14 @@ public final class Route
         GA.setMsg(pointNum,edgeNum);
         double coe=0;
         if(pointNum<=20){
-            coe=0.3;
-        }else if(pointNum<50){
+            coe=0.5;
+        }else if(pointNum<40){
+            coe=0.8;
+        }
+        else if(pointNum<50){
             coe=1;
         }else if(pointNum<100){
-            coe=2;
+            coe=2.7;
         }
         else if(pointNum<=300){
             coe=4;
@@ -67,18 +70,26 @@ public final class Route
         }
 
         int maxIter=(int)(100*coe);
+//        LogUtil.printLog("End");
         GA.InitPop();
+//        LogUtil.printLog("End");
         for(int i=0;i<maxIter;i++){
             GA.Breed();
 //           System.out.println( "  iter:"+i);
            GA.Mutation();
             if(pointNum>200){
-                if(System.currentTimeMillis()-startTime>9300)break;
+                if(System.currentTimeMillis()-startTime>9400) {
+//                    System.out.println( "  iter:"+i);
+                    break;
+                }
             }
         }
+
         GA.CalculFit();
         ArrayList<Integer>bestRoute=GA.getBestRoute();
-//        System.out.println(Tool.Connected(graphList,bestRoute)+" 符合规范");
+//        System.out.printl
+// n(Tool.Connected(graphList,bestRoute)+" 符合规范");
+
         boolean flage= GA.JugeDemand();
         if(flage==false){
             return "NA";
@@ -89,16 +100,18 @@ public final class Route
                 str += edge.get(i).toString();
                 if (i != edge.size() - 1) str += "|";
             }
-            System.out.print("weight:"+ GA.CalculWeight(bestRoute)+" ");
+//            System.out.print("weight:"+ GA.CalculWeight(bestRoute)+" ");
 
             return (str);
         }
+//        boolean flage= GA.JugeDemand();
+//        System.out.println(flage+"  demand");
 //        String str = "";
 //        for (int i = 0; i < bestRoute.size(); i++) {
 //            str += bestRoute.get(i).toString();
 //            if (i != bestRoute.size() - 1) str += ",";
 //        }
-//        System.out.print("weight:"+ GA.getTotalWeight()+" ");
+//        System.out.print("weight:"+ GA.CalculWeight(bestRoute)+" ");
 //        return (str);
     }
 
