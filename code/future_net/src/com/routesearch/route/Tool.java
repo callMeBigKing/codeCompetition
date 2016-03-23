@@ -176,6 +176,19 @@ public final class Tool {
         return flag;
     }
 
-
+    public static int[] Sort(int []arr){
+//        数组排序 从小到大
+        int length=arr.length;
+        for(int i=0;i<length-1;i++){
+            for(int j=i+1;j<length;j++){
+                if(arr[j]<arr[i]){
+                    int temp=arr[i];
+                    arr[i]=arr[j];
+                    arr[j] =temp;
+                }
+            }
+        }
+        return arr;
+    }
 }
 
