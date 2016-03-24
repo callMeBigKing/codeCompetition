@@ -38,7 +38,7 @@ public class Main {
 //        for(int i=0;i<20;i++) {
             long startTime= System.currentTimeMillis();
             String resultStr = Route.searchRoute(graphContent, conditionContent, startTime);
-            System.out.println(resultStr);
+//            System.out.println(resultStr);
 //        }
         // 写入输出文件
 
@@ -46,6 +46,7 @@ public class Main {
 
 
         LogUtil.printLog("End");
+
 
 
     }

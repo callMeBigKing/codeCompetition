@@ -109,12 +109,12 @@ public class GAAA {
 //        初始化种群，随机产生一群从起点到终点的路径
         population = new ArrayList[this.Popsize];
         for (int i = 0; i < this.Popsize; i++) {
-//            if(this.pointNum<150||this.edgeNum<500){
-//                population[i] = this.CreateOneRoute();
-//            }else {
-//                 population[i] = this.CreateOneRoute2();
-//            }
-            population[i] = this.CreateOneRoute2();
+            if(this.pointNum<=300||this.edgeNum<500){
+                population[i] = this.CreateOneRoute();
+            }else {
+                 population[i] = this.CreateOneRoute2();
+            }
+//            population[i] = this.CreateOneRoute2();
         }
     }
 
@@ -176,7 +176,9 @@ public class GAAA {
 //
         int endPoint=this.demand[demand.length-1];
         ArrayList<Integer> route = new ArrayList<Integer>();
-        while (true) {
+        int maxNum=20;
+//        最多刷20次
+        while (maxNum>0) {
             Random random = new Random();
             int demandNum = random.nextInt(this.demandSet.size() ) + 1;
 //       经过   随机 1-demandSet.size() 个中间点
@@ -238,6 +240,7 @@ public class GAAA {
             }else {
                 route.clear();
             }
+            maxNum--;
         }
 
         return this.removeLoop(route);
@@ -375,7 +378,7 @@ public class GAAA {
 
     public ArrayList<Integer> dijstra(int startPoint,int endPoint) {
         //生成一条从startPoint到endPoint的路径
-         int maxpoint=1000;//最多找maxpoint*出度个点
+        int maxpoint=1000;//最多找maxpoint*出度个点
         ArrayList<Integer> []route=new ArrayList[2] ;
         route[0]= new ArrayList<Integer>();
         route[1]= new ArrayList<Integer>();
@@ -441,8 +444,8 @@ public class GAAA {
 
         Random random = new Random();
         if(random.nextDouble()<this.crossRate) {
-            int fPointIndex=0;
-            int mPointIndex=0;
+            int fPointIndex;
+            int mPointIndex;
             try {
                 fPointIndex = random.nextInt(father.size() - 2) + 1;
 //        生成一个【1~~size-1） 的点  father的交叉点
@@ -970,7 +973,6 @@ public class GAAA {
 
 
     }
-
     public void Mutation2() {
 //        this.CalculFit();
 //        System.out.println(this.CalculFit(this.getBestRoute()));
