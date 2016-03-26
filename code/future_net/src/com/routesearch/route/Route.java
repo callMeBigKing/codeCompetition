@@ -70,19 +70,17 @@ public final class Route
         }
 
         int maxIter=(int)(100*coe);
-//        LogUtil.printLog("End");
         GA.InitPop();
-//        LogUtil.printLog("End");
         for(int i=0;i<maxIter;i++){
             GA.Breed();
-//           System.out.println( "  iter:"+i);
+           System.out.println( "  iter:"+i);
            GA.Mutation();
-            if(pointNum>200){
-                if(System.currentTimeMillis()-startTime>9400) {
-//                    System.out.println( "  iter:"+i);
-                    break;
-                }
-            }
+//            if(pointNum>200){
+//                if(System.currentTimeMillis()-startTime>9400) {
+////                    System.out.println( "  iter:"+i);
+//                    break;
+//                }
+//            }
         }
 
         GA.CalculFit();
@@ -100,7 +98,7 @@ public final class Route
                 str += edge.get(i).toString();
                 if (i != edge.size() - 1) str += "|";
             }
-//            System.out.print("weight:"+ GA.CalculWeight(bestRoute)+" ");
+            System.out.print("weight:"+ GA.CalculWeight(bestRoute)+" ");
 
             return (str);
         }

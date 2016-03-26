@@ -60,7 +60,7 @@ public class GAAA {
             this.Popsize=350;
         }
         else {
-            this.Popsize=500;
+            this.Popsize=20;
         }
         this.pointNum=pointNum;
         this.edgeNum=edgeNum;
@@ -77,6 +77,7 @@ public class GAAA {
 //        计算一条路径的适应度  fit=1/totalLength+N N 表示经过的中间点个数
         double totalLength = 0;//路径长度
         int midNum = 0;
+        if(route.size()==0)return 0;
         for (int i = 0; i < route.size() - 1; i++) {
 //            求i 到i+1之间的距离
             int point = route.get(i);
@@ -235,7 +236,10 @@ public class GAAA {
             }
 
             route=this.removeLoop(route);
-            if(route.get(route.size()-1)==endPoint){
+            if(route.size()==0&&maxNum==1){
+                return route;
+            }
+            else if(route.size()>0&&(route.get(route.size()-1)==endPoint)){
                 break;
             }else {
                 route.clear();
@@ -246,8 +250,6 @@ public class GAAA {
         return this.removeLoop(route);
 
     }
-
-
 
     public ArrayList<Integer> CreateOneRoute3(){
 //
@@ -401,7 +403,7 @@ public class GAAA {
 
 
             }
-            if (sign==1||fa>maxpoint)
+            if (sign==1||fa>maxpoint||fa+1<route[0].size()-1)
                 break;
             fa++;
 
@@ -695,7 +697,7 @@ public class GAAA {
 
         ArrayList[] nextPopulation = new ArrayList[this.Popsize];
         this.CalculFit();
-//        System.out.print(this.CalculFit(this.getBestRoute()));
+        System.out.print(this.CalculFit(this.getBestRoute()));
         nextPopulation[0] = this.getBestRoute();
 //      循环从1开始把上一代最好的个体留下来
         for (int i = 1; i < this.Popsize; i += 2) {
@@ -712,7 +714,7 @@ public class GAAA {
 
     public void CalculFit() {
 //        计算最短最大适应度和最短路径
-        double bestFit = 0;
+        double bestFit = -1;
 
         for (int i = 0; i < this.Popsize; i++) {
             ArrayList arrayList = this.population[i];
