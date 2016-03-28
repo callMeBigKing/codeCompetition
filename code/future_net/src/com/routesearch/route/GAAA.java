@@ -380,7 +380,7 @@ public class GAAA {
 
     public ArrayList<Integer> dijstra(int startPoint,int endPoint) {
         //生成一条从startPoint到endPoint的路径
-        int maxpoint=1000;//最多找maxpoint*出度个点
+        int maxpoint=500;//最多找maxpoint*出度个点
         ArrayList<Integer> []route=new ArrayList[2] ;
         route[0]= new ArrayList<Integer>();
         route[1]= new ArrayList<Integer>();
@@ -388,27 +388,27 @@ public class GAAA {
         route[1].add(0);
         int fa=0;
         int sign=-1;//符号
+        int cu=0;
         while (true)
         {
             int fapoint=route[0].get(fa);
             for (int j=0;j<graphList[fapoint].size();j++)
             {
-                route[0].add(graphList[fapoint].get(j)[0]);
+                cu=graphList[fapoint].get(j)[0];
+                if (route[0].contains(cu))
+                    continue;
+                route[0].add(cu);
                 route[1].add(fa);
                 if (route[0].get(route[0].size()-1)==endPoint)
                 {
                     sign=1;
                     break;
                 }
-
-
             }
-            if (sign==1||fa>maxpoint||fa+1<route[0].size()-1)
+            if (sign==1||fa>maxpoint||fa>route[0].size()-2)
                 break;
             fa++;
-
         }
-
         ArrayList<Integer> connect=new ArrayList<Integer>() ;
         if (sign<0)
             return connect;
